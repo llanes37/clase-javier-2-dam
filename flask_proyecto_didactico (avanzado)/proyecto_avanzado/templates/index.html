@@ -1,0 +1,69 @@
+{% extends 'base.html' %}{% block content %}
+  <!-- ! Hero + CTA -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h1 class="h4 mb-2">Inventario (MVC ligero)</h1>
+          <p class="text-muted">Lista de items desde el servicio en memoria. Prueba crear y ver detalle.</p>
+          {% if mensaje %}
+            <div class="alert alert-success py-2">{{ mensaje }}</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h5 class="mb-2">Crear rapido</h5>
+          <!-- * Form: envia a /crear dentro del blueprint web -->
+          <form action="{{ url_for('web.crear_item') }}" method="post" class="row gy-2">
+            <div class="col-12">
+              <label class="form-label">Nombre</label>
+              <input name="nombre" class="form-control" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Precio</label>
+              <input name="precio" type="number" step="0.01" min="0" class="form-control" required>
+            </div>
+            <div class="col-6">
+              <label class="form-label">Stock</label>
+              <input name="stock" type="number" min="0" class="form-control" value="1">
+            </div>
+            <div class="col-12">
+              <button class="btn btn-primary w-100" type="submit">Crear</button>
+            </div>
+          </form>
+          <div class="small text-muted mt-2">
+            Usa este formulario para probar la logica de creacion y refresco de la lista.
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ! Lista de items -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-light">
+      <h5 class="mb-0">Items disponibles</h5>
+    </div>
+    <div class="card-body">
+      {% if items %}
+        <div class="list-group">
+          {% for item in items %}
+            <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+               href="{{ url_for('web.item_detalle', item_id=item.id) }}">
+              <div>
+                <strong>{{ item.nombre }}</strong><br>
+                <small class="text-muted">Precio: {{ "%.2f"|format(item.precio) }} | Stock: {{ item.stock }}</small>
+              </div>
+              <span class="badge text-bg-primary">Ver</span>
+            </a>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted mb-0">Sin items todavia. Crea uno para empezar.</p>
+      {% endif %}
+    </div>
+  </div>
+{% endblock %}

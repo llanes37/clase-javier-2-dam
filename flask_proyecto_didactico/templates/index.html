@@ -1,0 +1,166 @@
+{% extends 'base.html' %}{% block content %}
+  <!-- ! Hero de bienvenida con resumen de temas -->
+  <div class="row mb-4">
+    <div class="col-md-8">
+      <div class="card shadow-sm">
+        <div class="card-body">
+          <h1 class="h3 mb-3">Bienvenido a Flask</h1>
+          <p class="lead">Practica rutas, formularios, JSON y manejo de errores en una sola app.</p>
+          <ul>
+            <li>Rutas y parametros</li>
+            <li>Formularios (POST)</li>
+            <li>API JSON</li>
+            <li>Manejo de errores</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card bg-info text-white shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Consejo</h5>
+          <p class="card-text small">Abre DevTools (F12) y mira la pestana Network para ver cada peticion.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ! SECCION 1: FORMULARIO HTML (POST) -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-primary text-white">
+      <h5 class="mb-0">1) Formulario (POST)</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small">Metodo POST: envia datos al servidor sin mostrarlos en la URL.</p>
+      <!-- * Form structure: action -> vista, method -> POST -->
+      <form action="{{ url_for('procesar') }}" method="post" class="row gy-2">
+        <div class="col-12 col-md-8">
+          <label for="nombre" class="form-label">Tu nombre:</label>
+          <input type="text" id="nombre" name="nombre" class="form-control" placeholder="Escribe tu nombre aqui" required>
+        </div>
+        <div class="col-12 col-md-4 d-flex align-items-end">
+          <button type="submit" class="btn btn-primary w-100">Enviar</button>
+        </div>
+      </form>
+      <div class="code-block mt-2 small">
+        <!-- ? Ejemplo minimo de formulario POST -->
+        <code>&lt;form action="/procesar" method="post"&gt;</code><br>
+        <code>  &lt;input name="nombre" ...&gt;</code><br>
+        <code>&lt;/form&gt;</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ! SECCION 2: RUTAS CON PARAMETROS -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-success text-white">
+      <h5 class="mb-0">2) Rutas con parametros (/ruta/valor)</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small">Los parametros van en la URL. Haz clic en los enlaces:</p>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <a href="{{ url_for('saluda', nombre='Joaquin') }}">/saluda/Joaquin</a>
+          <small class="text-muted d-block">Parametro: nombre (string)</small>
+        </li>
+        <li class="list-group-item">
+          <a href="{{ url_for('suma', a=3, b=5) }}">/suma/3/5</a>
+          <small class="text-muted d-block">Parametros tipados: int (3) + int (5)</small>
+        </li>
+      </ul>
+      <div class="code-block mt-3 small">
+        <code>@app.route("/saluda/&lt;nombre&gt;")</code><br>
+        <code>def saluda(nombre: str): ...</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ! SECCION 3: QUERY STRINGS (GET) -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-warning text-dark">
+      <h5 class="mb-0">3) Query Strings (?param=valor)</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small">Los parametros van DESPUES del ? sin cambiar la ruta.</p>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <a href="{{ url_for('buscar') }}?q=flask&page=1">/buscar?q=flask&page=1</a>
+          <small class="text-muted d-block">Busqueda: flask, pagina: 1</small>
+        </li>
+        <li class="list-group-item">
+          <a href="{{ url_for('buscar') }}?q=python&page=2">/buscar?q=python&page=2</a>
+          <small class="text-muted d-block">Busqueda: python, pagina: 2</small>
+        </li>
+      </ul>
+      <div class="code-block mt-3 small">
+        <code>q = request.args.get("q", "")</code><br>
+        <code>page = request.args.get("page", 1)</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ! SECCION 4: API JSON -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-danger text-white">
+      <h5 class="mb-0">4) API JSON (GET/POST)</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small">Endpoints que devuelven JSON (formato de datos ligero).</p>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <code>GET</code> <a href="{{ url_for('api_echo') }}?q=hola">/api/echo?q=hola</a>
+          <small class="text-muted d-block">Devuelve: {"ok": true, "echo": "hola"}</small>
+        </li>
+        <li class="list-group-item">
+        <code>GET</code> <a href="{{ url_for('api_health') }}">/api/health</a>
+          <small class="text-muted d-block">Estado de la API: {"status": "ok"}</small>
+        </li>
+        <li class="list-group-item">
+          <code>POST</code> /api/saludo
+          <small class="text-muted d-block">
+            Abre DevTools -> Network -> haz POST con JSON: {"nombre": "Ada"}
+          </small>
+        </li>
+      </ul>
+      <div class="code-block mt-3 small">
+        <!-- * Respuesta JSON generada en el backend -->
+        <code>return jsonify(ok=True, echo=q)</code>
+      </div>
+    </div>
+  </div>
+
+  <!-- ! SECCION 5: MANEJO DE ERRORES -->
+  <div class="card shadow-sm mb-4">
+    <div class="card-header bg-secondary text-white">
+      <h5 class="mb-0">5) Manejo de errores (HTTP 404, 500)</h5>
+    </div>
+    <div class="card-body">
+      <p class="text-muted small">Prueba rutas que no existen o que generan errores:</p>
+      <ul class="list-group">
+        <li class="list-group-item">
+          <a href="/ruta-que-no-existe">404 - No encontrado</a>
+          <small class="text-muted d-block">La ruta no existe en la app</small>
+        </li>
+        <li class="list-group-item">
+          <a href="{{ url_for('error_intencional') }}">500 - Error intencional</a>
+          <small class="text-muted d-block">Provoca un error controlado</small>
+        </li>
+      </ul>
+    </div>
+  </div>
+
+  <!-- SECCION 6: RECURSOS -->
+  <div class="card shadow-sm">
+    <div class="card-header bg-light">
+      <h5 class="mb-0">Recursos</h5>
+    </div>
+    <div class="card-body">
+      <ul class="small">
+        <li><strong>Flask:</strong> https://flask.palletsprojects.com/</li>
+        <li><strong>Jinja2:</strong> https://jinja.palletsprojects.com/</li>
+        <li><strong>HTTP:</strong> GET, POST, codigos de estado (200, 404, 500...)</li>
+        <li><strong>JSON:</strong> {"clave": "valor"} - formato estandar en web</li>
+      </ul>
+    </div>
+  </div>
+{% endblock %}

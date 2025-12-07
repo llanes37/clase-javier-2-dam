@@ -1,0 +1,21 @@
+{% extends 'base.html' %}{% block content %}
+  <!-- ! About: explica la arquitectura -->
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h3 class="h5 mb-2">Arquitectura</h3>
+      <ul>
+        <li><strong>App factory:</strong> `create_app` en `__init__.py`.</li>
+        <li><strong>Blueprints:</strong> `routes/web.py` para HTML, `routes/api.py` para JSON.</li>
+        <li><strong>Controladores/servicios:</strong> `controllers/items.py` maneja logica.</li>
+        <li><strong>Modelos simples:</strong> `models.py` con dataclass Item.</li>
+      </ul>
+      <h3 class="h6 mt-3">Practicas sugeridas</h3>
+      <ol>
+        <li>Agrupa rutas nuevas en otros blueprints (auth, admin).</li>
+        <li>Persistencia: cambia el servicio a SQLite o SQLAlchemy.</li>
+        <li>Agrega tests para la API con pytest y client de Flask.</li>
+        <li>Mejora UX: flash messages y validaciones en formularios.</li>
+      </ol>
+    </div>
+  </div>
+{% endblock %}
