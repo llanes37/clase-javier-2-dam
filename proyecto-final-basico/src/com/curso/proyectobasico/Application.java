@@ -118,6 +118,7 @@ public class Application {
             view.line("1) Listar todos");
             view.line("2) Crear nuevo");
             view.line("3) Borrar por ID");
+            view.line("4) Editar cliente");
             view.line("0) Volver al menu principal");
             String op = view.prompt("Opcion");
             if (op.equals("0"))
@@ -128,6 +129,7 @@ public class Application {
                     case "1" -> listarClientes();
                     case "2" -> crearCliente();
                     case "3" -> borrarCliente();
+                    case "4" -> editarCliente();
                     default -> view.line("Opcion no valida.");
                 }
             } catch (Exception e) {
@@ -168,6 +170,44 @@ public class Application {
         String telefono = view.prompt("Telefono (opcional, ENTER para omitir)");
         Cliente c = clienteCtl.crear(nombre, email, telefono);
         view.line("✔ Cliente creado con ID: " + c.getId());
+    }
+
+    /*
+     * // * EDITAR CLIENTE
+     * // ? Pide el ID del cliente a editar, muestra los datos actuales
+     * y permite modificar nombre, email y teléfono.
+     * // ! Si el usuario deja un campo vacío, se mantiene el valor actual.
+     */
+    private void editarCliente() {
+        view.line("  IDs disponibles: copia el ID del listado (opcion 1).");
+        String id = view.prompt("ID del cliente a editar");
+
+        // Buscar el cliente y mostrar sus datos actuales
+        List<Cliente> todos = clienteCtl.listar();
+        Cliente actual = todos.stream()
+                .filter(c -> c.getId().equals(id))
+                .findFirst()
+                .orElse(null);
+
+        if (actual == null) {
+            view.line("⚠ Cliente no encontrado con ese ID.");
+            return;
+        }
+
+        view.line("  Datos actuales: " + actual);
+        view.line("  (Pulsa ENTER en un campo para mantener el valor actual)");
+
+        String nuevoNombre = view.prompt("Nombre [" + actual.getNombre() + "]");
+        if (nuevoNombre.isBlank()) nuevoNombre = actual.getNombre();
+
+        String nuevoEmail = view.prompt("Email [" + actual.getEmail() + "]");
+        if (nuevoEmail.isBlank()) nuevoEmail = actual.getEmail();
+
+        String nuevoTelefono = view.prompt("Telefono [" + actual.getTelefono() + "]");
+        if (nuevoTelefono.isBlank()) nuevoTelefono = actual.getTelefono();
+
+        Cliente editado = clienteCtl.actualizar(id, nuevoNombre, nuevoEmail, nuevoTelefono);
+        view.line("✔ Cliente actualizado: " + editado);
     }
 
     /*

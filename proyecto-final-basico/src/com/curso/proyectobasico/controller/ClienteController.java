@@ -133,6 +133,52 @@ public class ClienteController {
     }
 
     /*
+     * // ! ACTUALIZAR un cliente existente
+     *
+     * // * FLUJO:
+     * 1. Validar que el cliente existe.
+     * 2. Validar nombre obligatorio.
+     * 3. Si se proporciona email, validar formato y unicidad (ignorando el propio cliente).
+     * 4. Actualizar los campos y persistir.
+     *
+     * @param id       ID del cliente a editar
+     * @param nombre   Nuevo nombre (obligatorio, no vacío)
+     * @param email    Nuevo email (obligatorio, formato válido, único)
+     * @param telefono Nuevo teléfono (opcional)
+     * @return Cliente actualizado
+     * @throws ValidationException si los datos son inválidos o el email ya está en uso por otro cliente
+     */
+    public Cliente actualizar(String id, String nombre, String email, String telefono) {
+        Validator.requireNotBlank(id, "Id");
+
+        Cliente existente = repo.findById(id)
+                .orElseThrow(() -> new ValidationException("No se encontró ningún cliente con ID: " + id));
+
+        Validator.requireNotBlank(nombre, "Nombre");
+        Validator.requireEmail(email);
+
+        // Comprobar unicidad del email (ignorar el propio cliente)
+        repo.findByEmail(email).ifPresent(otro -> {
+            if (!otro.getId().equals(id)) {
+                throw new ValidationException(
+                        "Ya existe otro cliente con el email '" + email + "'.");
+            }
+        });
+
+        existente.setNombre(nombre.trim());
+        existente.setEmail(email.trim().toLowerCase());
+        existente.setTelefono(telefono == null ? "" : telefono.trim());
+
+        Cliente actualizado = repo.update(existente);
+
+        System.out.println("  → Cliente actualizado: " + actualizado.getNombre()
+                + " | Email: " + actualizado.getEmail()
+                + " | ID: " + actualizado.getId());
+
+        return actualizado;
+    }
+
+    /*
      * // ! BORRAR un cliente por su ID
      *
      * // * La eliminación es permanente.
