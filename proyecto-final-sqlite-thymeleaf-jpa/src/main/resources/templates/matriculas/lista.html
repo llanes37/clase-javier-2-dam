@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Matriculas</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topnav}"></div>
+
+<main class="shell page">
+    <section class="page-header">
+        <h1>Matriculas</h1>
+        <a class="btn" th:href="@{/matriculas/nueva}">Nueva matricula</a>
+    </section>
+
+    <!-- * Mensajes de operaciones sobre matriculas -->
+    <div class="alert ok" th:if="${ok}" th:text="${ok}"></div>
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Alumno</th>
+            <th>Curso</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="matricula : ${matriculas}">
+            <td th:text="${matricula.id}">1</td>
+            <td th:text="${matricula.alumno.nombre}">Alumno</td>
+            <td th:text="${matricula.curso.nombre}">Curso</td>
+            <td th:text="${matricula.fechaMatricula}">2026-03-03</td>
+            <td th:text="${matricula.estado}">ACTIVA</td>
+            <td class="actions">
+                <!-- ! Solo se permite anular desde estado ACTIVA -->
+                <form th:if="${matricula.estado.name() == 'ACTIVA'}"
+                      th:action="@{|/matriculas/${matricula.id}/anular|}" method="post">
+                    <button class="btn warning" type="submit">Anular</button>
+                </form>
+                <form th:action="@{|/matriculas/${matricula.id}/eliminar|}" method="post"
+                      onsubmit="return confirm('Se eliminara la matricula. Continuar?');">
+                    <button class="btn danger" type="submit">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

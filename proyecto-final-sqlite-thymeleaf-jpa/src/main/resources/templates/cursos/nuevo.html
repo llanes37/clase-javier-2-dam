@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo curso</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topnav}"></div>
+
+<main class="shell page narrow">
+    <section class="page-header">
+        <h1>Nuevo curso</h1>
+        <a class="btn ghost" th:href="@{/cursos}">Volver</a>
+    </section>
+
+    <!-- ? Error esperado: fecha fin anterior a inicio -->
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+
+    <form class="form" th:action="@{/cursos}" th:object="${form}" method="post">
+        <!-- * El campo tipo consume el enum `CursoTipo` enviado por el controller -->
+        <label>Nombre</label>
+        <input type="text" th:field="*{nombre}" placeholder="Nombre del curso">
+        <p class="field-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
+
+        <label>Tipo</label>
+        <select th:field="*{tipo}">
+            <option th:each="tipo : ${tipos}" th:value="${tipo}" th:text="${tipo}"></option>
+        </select>
+        <p class="field-error" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></p>
+
+        <label>Fecha inicio</label>
+        <input type="date" th:field="*{fechaInicio}">
+        <p class="field-error" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></p>
+
+        <label>Fecha fin</label>
+        <input type="date" th:field="*{fechaFin}">
+        <p class="field-error" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}"></p>
+
+        <label>Precio</label>
+        <input type="number" th:field="*{precio}" min="0" step="0.01" placeholder="0.00">
+        <p class="field-error" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></p>
+
+        <button class="btn" type="submit">Guardar curso</button>
+    </form>
+</main>
+</body>
+</html>

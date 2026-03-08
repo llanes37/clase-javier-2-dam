@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nueva matricula</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topnav}"></div>
+
+<main class="shell page narrow">
+    <section class="page-header">
+        <h1>Nueva matricula</h1>
+        <a class="btn ghost" th:href="@{/matriculas}">Volver</a>
+    </section>
+
+    <!-- ? Mensajes de negocio: fecha fuera de rango o duplicado ACTIVA -->
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+
+    <form class="form" th:action="@{/matriculas}" th:object="${form}" method="post">
+        <!-- * Combos cargados desde service para evitar hardcodear opciones -->
+        <label>Alumno</label>
+        <select th:field="*{alumnoId}">
+            <option value="">Selecciona un alumno</option>
+            <option th:each="alumno : ${alumnos}" th:value="${alumno.id}" th:text="${alumno.nombre + ' (' + alumno.email + ')'}"></option>
+        </select>
+        <p class="field-error" th:if="${#fields.hasErrors('alumnoId')}" th:errors="*{alumnoId}"></p>
+
+        <label>Curso</label>
+        <select th:field="*{cursoId}">
+            <option value="">Selecciona un curso</option>
+            <option th:each="curso : ${cursos}" th:value="${curso.id}" th:text="${curso.nombre + ' [' + curso.tipo + ']'}"></option>
+        </select>
+        <p class="field-error" th:if="${#fields.hasErrors('cursoId')}" th:errors="*{cursoId}"></p>
+
+        <label>Fecha matricula (opcional)</label>
+        <input type="date" th:field="*{fechaMatricula}">
+
+        <button class="btn" type="submit">Guardar matricula</button>
+    </form>
+</main>
+</body>
+</html>

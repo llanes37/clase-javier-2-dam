@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Nuevo alumno</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topnav}"></div>
+
+<main class="shell page narrow">
+    <section class="page-header">
+        <h1>Nuevo alumno</h1>
+        <a class="btn ghost" th:href="@{/alumnos}">Volver</a>
+    </section>
+
+    <!-- ? Errores de negocio como email duplicado -->
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+
+    <form class="form" th:action="@{/alumnos}" th:object="${form}" method="post">
+        <!-- * Validaciones de formato en formulario; reglas fuertes en capa service -->
+        <label>Nombre</label>
+        <input type="text" th:field="*{nombre}" placeholder="Nombre completo">
+        <p class="field-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
+
+        <label>Email</label>
+        <input type="email" th:field="*{email}" placeholder="alumno@correo.com">
+        <p class="field-error" th:if="${#fields.hasErrors('email')}" th:errors="*{email}"></p>
+
+        <label>Fecha de nacimiento (opcional)</label>
+        <input type="date" th:field="*{fechaNacimiento}">
+
+        <button class="btn" type="submit">Guardar alumno</button>
+    </form>
+</main>
+</body>
+</html>

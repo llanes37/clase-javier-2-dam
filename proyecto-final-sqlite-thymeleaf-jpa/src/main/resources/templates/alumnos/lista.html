@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Alumnos</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topnav}"></div>
+
+<main class="shell page">
+    <section class="page-header">
+        <h1>Alumnos</h1>
+        <a class="btn" th:href="@{/alumnos/nuevo}">Nuevo alumno</a>
+    </section>
+
+    <!-- * Mensajeria flash de exito/error tras acciones POST -->
+    <div class="alert ok" th:if="${ok}" th:text="${ok}"></div>
+    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+
+    <table class="table">
+        <thead>
+        <tr>
+            <th>ID</th>
+            <th>Nombre</th>
+            <th>Email</th>
+            <th>Fecha nacimiento</th>
+            <th>Acciones</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="alumno : ${alumnos}">
+            <td th:text="${alumno.id}">1</td>
+            <td th:text="${alumno.nombre}">Nombre</td>
+            <td th:text="${alumno.email}">email@demo.com</td>
+            <td th:text="${alumno.fechaNacimiento != null ? alumno.fechaNacimiento : '-'}">-</td>
+            <td>
+                <!-- ! El borrado final se protege en service: si hay matriculas ACTIVAS, no elimina -->
+                <form th:action="@{|/alumnos/${alumno.id}/eliminar|}" method="post"
+                      onsubmit="return confirm('Se eliminara el alumno. Continuar?');">
+                    <button class="btn danger" type="submit">Eliminar</button>
+                </form>
+            </td>
+        </tr>
+        </tbody>
+    </table>
+</main>
+</body>
+</html>

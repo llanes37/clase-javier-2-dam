@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home - Proyecto Final SQLite JPA</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<!-- * Home didactica: punto de entrada funcional por modulo -->
+<div th:replace="~{fragments/nav :: topnav}"></div>
+
+<main class="shell page">
+    <section class="hero">
+        <h1>Gestor de cursos con Spring Boot, Thymeleaf y SQLite</h1>
+        <p>Proyecto didactico por capas con reglas de negocio, migraciones Flyway y pruebas.</p>
+    </section>
+
+    <section class="card-grid">
+        <!-- ? Cada tarjeta representa una unidad de negocio independiente -->
+        <article class="card">
+            <h2>Alumnos</h2>
+            <p>Alta, listado y borrado protegido por matriculas activas.</p>
+            <a class="btn" th:href="@{/alumnos}">Abrir modulo</a>
+        </article>
+        <article class="card">
+            <h2>Cursos</h2>
+            <p>Control de fechas, tipo de curso y precio valido.</p>
+            <a class="btn" th:href="@{/cursos}">Abrir modulo</a>
+        </article>
+        <article class="card">
+            <h2>Matriculas</h2>
+            <p>Alta con validacion temporal y control de duplicados activos.</p>
+            <a class="btn" th:href="@{/matriculas}">Abrir modulo</a>
+        </article>
+    </section>
+</main>
+</body>
+</html>

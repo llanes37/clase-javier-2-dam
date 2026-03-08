@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<body>
+<!-- * Fragmento de navegacion comun para todas las vistas -->
+<!-- ? Reutilizar fragmentos evita duplicacion y mantiene consistencia visual -->
+<header class="topbar" th:fragment="topnav">
+    <div class="shell topbar-inner">
+        <a class="brand" th:href="@{/}">Proyecto Final JPA</a>
+        <nav class="menu">
+            <a th:href="@{/alumnos}">Alumnos</a>
+            <a th:href="@{/cursos}">Cursos</a>
+            <a th:href="@{/matriculas}">Matriculas</a>
+        </nav>
+    </div>
+</header>
+</body>
+</html>
