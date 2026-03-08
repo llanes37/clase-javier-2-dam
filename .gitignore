@@ -1,0 +1,7 @@
+# Java compiled artifacts
+*.class
+
+# Common Java build output folders
+bin/
+BIN_DIR/
+out/

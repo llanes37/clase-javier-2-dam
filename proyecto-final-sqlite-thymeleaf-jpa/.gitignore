@@ -1,0 +1,6 @@
+/target/
+/data/*.db
+
+!.mvn/wrapper/maven-wrapper.jar
+!**/src/main/**/target/
+!**/src/test/**/target/

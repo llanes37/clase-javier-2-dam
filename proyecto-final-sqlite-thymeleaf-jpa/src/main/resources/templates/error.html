@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="es" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Error</title>
+    <link rel="stylesheet" th:href="@{/css/app.css}">
+</head>
+<body>
+<div th:replace="~{fragments/nav :: topnav}"></div>
+
+<main class="shell page narrow">
+    <!-- ! Pantalla controlada de error para no exponer stacktrace al usuario -->
+    <section class="card">
+        <h1 th:text="${titulo}">Error</h1>
+        <p th:text="${mensaje}">Ha ocurrido un error.</p>
+        <a class="btn" th:href="@{/}">Volver al inicio</a>
+    </section>
+</main>
+</body>
+</html>
