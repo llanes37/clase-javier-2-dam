@@ -33,7 +33,7 @@ public class Curso {
     // (AUTOINCREMENT)
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     // * nullable=false → NOT NULL en BD | length=150 → VARCHAR(150)
     @Column(nullable = false, length = 150)
@@ -65,14 +65,14 @@ public class Curso {
     // ? BigDecimal es exacto: 0.1 + 0.2 = 0.3 (correcto). Esencial para datos
     // financieros.
     // ? En BD: DECIMAL(10,2) → máximo 10 dígitos con 2 decimales (ej: 9999999.99)
-    @Column(nullable = false, precision = 10, scale = 2)
+    @Column(nullable = false, precision = 10, scale = 2, columnDefinition = "DECIMAL(10,2)")
     private BigDecimal precio;
 
     // ─────────────────────────────────────────────────────────────────────────
     // * 🔵 GETTERS Y SETTERS
     // ─────────────────────────────────────────────────────────────────────────
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

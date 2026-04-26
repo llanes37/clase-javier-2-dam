@@ -1,5 +1,6 @@
 package com.curso.pfsqlite.web;
 
+import com.curso.pfsqlite.domain.Curso;
 import com.curso.pfsqlite.domain.CursoTipo;
 import com.curso.pfsqlite.service.BusinessException;
 import com.curso.pfsqlite.service.CursoService;
@@ -111,7 +112,7 @@ public class CursoController {
     // ? Si el curso tiene matrículas ACTIVAS, el service lanza BusinessException.
     // ? El curso NO se borra y el mensaje de error aparece como flash en la lista.
     @PostMapping("/{id}/eliminar")
-    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String eliminar(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         try {
             cursoService.borrar(id);
             redirectAttributes.addFlashAttribute("ok", "Curso eliminado correctamente");
@@ -119,5 +120,54 @@ public class CursoController {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
         return "redirect:/cursos";
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // * 🔵 GET /cursos/{id}/editar → Muestra el formulario de edición relleno
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @GetMapping("/{id}/editar")
+    public String editar(@PathVariable Integer id, Model model) {
+        Curso curso = cursoService.buscarPorId(id);
+        CursoForm form = new CursoForm();
+        form.setNombre(curso.getNombre());
+        form.setTipo(curso.getTipo());
+        form.setFechaInicio(curso.getFechaInicio());
+        form.setFechaFin(curso.getFechaFin());
+        form.setPrecio(curso.getPrecio());
+        model.addAttribute("form", form);
+        model.addAttribute("tipos", CursoTipo.values());
+        model.addAttribute("cursoId", id);
+        return "cursos/editar";
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // * 🔵 POST /cursos/{id}/editar → Procesa y guarda los cambios del curso
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @PostMapping("/{id}/editar")
+    public String actualizar(
+            @PathVariable Integer id,
+            @Valid @ModelAttribute("form") CursoForm form,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("tipos", CursoTipo.values());
+            model.addAttribute("cursoId", id);
+            return "cursos/editar";
+        }
+
+        try {
+            cursoService.actualizar(id, form);
+            redirectAttributes.addFlashAttribute("ok", "Curso actualizado correctamente");
+            return "redirect:/cursos";
+        } catch (BusinessException ex) {
+            model.addAttribute("tipos", CursoTipo.values());
+            model.addAttribute("cursoId", id);
+            model.addAttribute("error", ex.getMessage());
+            return "cursos/editar";
+        }
     }
 }

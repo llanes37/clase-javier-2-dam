@@ -1,0 +1,39 @@
+{% extends 'base.html' %}{% block content %}
+  <div class="row justify-content-center">
+    <div class="col-md-7 col-lg-5">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="h4 mb-3">Acceso rapido</h2>
+          {% if user %}
+            <div class="d-flex align-items-center gap-3 p-3 rounded-3 bg-light mb-3">
+              {% if user.avatar_path %}
+                <img src="{{ url_for('static', filename=user.avatar_path) }}" alt="Avatar" class="avatar-ring">
+              {% else %}
+                <span class="avatar-fallback">{{ (user.display_name[:1] or 'U').upper() }}</span>
+              {% endif %}
+              <div>
+                <strong>{{ user.display_name }}</strong><br>
+                <small class="text-muted">@{{ user.username }}</small>
+              </div>
+            </div>
+            {% if error %}
+              <div class="alert alert-danger py-2">{{ error }}</div>
+            {% endif %}
+            <form action="{{ url_for('auth.quick_login_action', user_id=user.id) }}" method="post" class="row g-3">
+              <div class="col-12">
+                <label class="form-label">Contrasena</label>
+                <input name="password" type="password" class="form-control" required>
+              </div>
+              <div class="col-12 d-flex gap-2">
+                <button class="btn btn-primary" type="submit">Entrar</button>
+                <a class="btn btn-outline-secondary" href="{{ url_for('auth.login_view') }}">Volver</a>
+              </div>
+            </form>
+          {% else %}
+            <div class="alert alert-warning mb-0">Usuario no disponible.</div>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

@@ -1,0 +1,79 @@
+{% extends 'base.html' %}{% block content %}
+  <div class="row g-4 align-items-start">
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <h2 class="h4 mb-3">Iniciar sesion</h2>
+          {% if error %}
+            <div class="alert alert-danger py-2">{{ error }}</div>
+          {% endif %}
+          <form action="{{ url_for('auth.login_action') }}" method="post" class="row g-3">
+            <div class="col-12">
+              <label class="form-label">Usuario</label>
+              <input name="username" class="form-control" required>
+            </div>
+            <div class="col-12">
+              <label class="form-label">Contrasena</label>
+              <input name="password" type="password" class="form-control" required>
+            </div>
+            <div class="col-12 form-check ms-1">
+              <input class="form-check-input" type="checkbox" name="remember_quick" id="remember_quick_login" checked>
+              <label class="form-check-label" for="remember_quick_login">
+                Mostrar este usuario en acceso rapido
+              </label>
+            </div>
+            <div class="col-12 d-flex gap-2">
+              <button class="btn btn-primary px-4" type="submit">Entrar</button>
+              <a href="{{ url_for('auth.register_view') }}" class="btn btn-outline-secondary">Crear cuenta</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-6">
+      <div class="card shadow-sm">
+        <div class="card-body p-4">
+          <div class="d-flex justify-content-between align-items-center mb-3">
+            <h3 class="h5 mb-0">Acceso rapido</h3>
+            <small class="text-muted">Solo pide contrasena</small>
+          </div>
+          {% if quick_users %}
+            <div class="vstack gap-3">
+              {% for quick_user in quick_users %}
+                <div class="quick-user-card p-3">
+                  <div class="d-flex align-items-center justify-content-between">
+                    <div class="d-flex align-items-center gap-3">
+                      {% if quick_user.avatar_path %}
+                        <img src="{{ url_for('static', filename=quick_user.avatar_path) }}" alt="Avatar" class="avatar-ring">
+                      {% else %}
+                        <span class="avatar-fallback">{{ (quick_user.display_name[:1] or 'U').upper() }}</span>
+                      {% endif %}
+                      <div>
+                        <strong>{{ quick_user.display_name }}</strong><br>
+                        <small class="text-muted">@{{ quick_user.username }}</small>
+                        {% if quick_user.bio %}
+                          <div class="small text-muted">{{ quick_user.bio }}</div>
+                        {% endif %}
+                      </div>
+                    </div>
+                    <div class="d-flex gap-2">
+                      <a href="{{ url_for('auth.quick_login_view', user_id=quick_user.id) }}" class="btn btn-sm btn-dark">
+                        Entrar
+                      </a>
+                      <form action="{{ url_for('auth.quick_login_remove', user_id=quick_user.id) }}" method="post" class="m-0">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Quitar</button>
+                      </form>
+                    </div>
+                  </div>
+                </div>
+              {% endfor %}
+            </div>
+          {% else %}
+            <p class="text-muted mb-0">Todavia no hay usuarios guardados para inicio rapido.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+{% endblock %}

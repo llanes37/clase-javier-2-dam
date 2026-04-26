@@ -27,11 +27,11 @@ public class MatriculaForm {
 
     // * @NotNull → el usuario DEBE seleccionar un alumno del <select>
     @NotNull(message = "Debes seleccionar un alumno")
-    private Long alumnoId;
+    private Integer alumnoId;
 
     // * @NotNull → el usuario DEBE seleccionar un curso del <select>
     @NotNull(message = "Debes seleccionar un curso")
-    private Long cursoId;
+    private Integer cursoId;
 
     // * Campo opcional → si es null, el service usa LocalDate.now() como fecha por
     // defecto
@@ -44,19 +44,19 @@ public class MatriculaForm {
     // * 🔵 GETTERS Y SETTERS
     // ─────────────────────────────────────────────────────────────────────────
 
-    public Long getAlumnoId() {
+    public Integer getAlumnoId() {
         return alumnoId;
     }
 
-    public void setAlumnoId(Long alumnoId) {
+    public void setAlumnoId(Integer alumnoId) {
         this.alumnoId = alumnoId;
     }
 
-    public Long getCursoId() {
+    public Integer getCursoId() {
         return cursoId;
     }
 
-    public void setCursoId(Long cursoId) {
+    public void setCursoId(Integer cursoId) {
         this.cursoId = cursoId;
     }
 

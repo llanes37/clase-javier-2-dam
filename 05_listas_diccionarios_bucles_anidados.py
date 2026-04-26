@@ -67,7 +67,8 @@ def seccion_1():
     # Métodos útiles: append, insert, remove, pop, sort, reverse, index, count
 
     # * DEMO
-    productos = ["bolígrafo", "cuaderno", "grapas"]
+    productos = ["bolígrafo", "cuaderno", "grapas", "folios"]
+    productos.append("marcador")
     productos.append("carpeta")
     productos.insert(1, "regla")
     productos.remove("grapas")
@@ -81,6 +82,16 @@ def seccion_1():
     # 1) Crea lista con 4 ciudades. Inserta una en la posición 2. Elimina la última.
     # 2) Muestra: longitud, primera, última y el slice 1:3.
     # --- ZONA DEL ALUMNO -----------------------------------------------------------------
+
+    ciudades = ["Madrid", "Barcelona", "Valencia", "Valladolid"]
+    ciudades.insert(2, "Burgos")
+    ciudades.pop(-1)
+    print("Ciudades:", ciudades)
+
+    # Bucle que imprime si encuentra Madrid
+    for ciudad in ciudades:
+        if ciudad == "Madrid":
+            print("¡Encontrado Madrid en la lista!")
 
 
 # =========================================================================================
@@ -126,9 +137,14 @@ def seccion_3():
     for nombre, precio in precios.items():
         print(f"{nombre}: {precio:.2f} €")
 
-    # TODO: (Tema: INVENTARIO)
-    # Recorre un dict {"A":10, "B":0, "C":7} y muestra "X -> stock OK" si >0, si no "sin stock".
+    # TODO: (Tema: NOTAS DE ALUMNOS)
+    # Crea un dict con 3 alumnos y sus notas {"Ana": 8.5, "Carlos": 6.0, "María": 9.2}
+    # Recorre con items() y muestra "X -> APROBADO" si nota>=5, si no "SUSPENSO".
     # --- ZONA DEL ALUMNO -----------------------------------------------------------------
+    notas = {"Ana": 8.5, "Carlos": 4.2, "María": 9.2}
+    for alumno, nota in notas.items():
+        estado = "APROBADO" if nota >= 5 else "SUSPENSO"
+        print(f"{alumno} -> {estado} (nota: {nota})")
 
 
 # =========================================================================================

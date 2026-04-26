@@ -94,17 +94,8 @@ public class MatriculaService {
                 log.debug("Creando matrícula: alumnoId={}, cursoId={}", alumno.getId(), curso.getId());
 
                 // * Paso 2: si el usuario no eligió fecha, usamos 'hoy' como valor por defecto
-                LocalDate fecha = form.getFechaMatricula() == null ? LocalDate.now() : form.getFechaMatricula();
-
-                // ! Paso 3: validar ventana temporal del curso
-                // ? isBefore(inicio) → fecha ANTERIOR al comienzo del curso → inválida
-                // ? isAfter(fin) → fecha POSTERIOR al fin del curso → inválida
-                if (fecha.isBefore(curso.getFechaInicio()) || fecha.isAfter(curso.getFechaFin())) {
-                        log.warn("Matrícula rechazada: fecha={} fuera de rango [{}, {}]",
-                                        fecha, curso.getFechaInicio(), curso.getFechaFin());
-                        throw new BusinessException(
-                                        "La fecha de matrícula debe estar entre el inicio y fin del curso");
-                }
+                LocalDate fecha = resolverFecha(form.getFechaMatricula(), LocalDate.now());
+                validarFechaEnRango(fecha, curso);
 
                 // ! Paso 4: unicidad de matrícula ACTIVA
                 // ? Una matrícula ANULADA NO bloquea: el alumno puede volver a matricularse.
@@ -134,6 +125,56 @@ public class MatriculaService {
         }
 
         // ─────────────────────────────────────────────────────────────────────────
+        // * 🔵 buscarPorId() → carga una matrícula con alumno y curso para edición
+        // ─────────────────────────────────────────────────────────────────────────
+
+        @Transactional(readOnly = true)
+        public Matricula buscarPorId(Integer id) {
+                return matriculaRepository.findDetalleById(id)
+                                .orElseThrow(() -> new NotFoundException("Matrícula no encontrada"));
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // * 🔵 actualizar() → modifica alumno, curso y fecha preservando el estado
+        // ─────────────────────────────────────────────────────────────────────────
+
+        @Transactional
+        public Matricula actualizar(Integer id, MatriculaForm form) {
+                Matricula matricula = matriculaRepository.findDetalleById(id)
+                                .orElseThrow(() -> new NotFoundException("Matrícula no encontrada"));
+
+                Alumno alumno = alumnoRepository.findById(form.getAlumnoId())
+                                .orElseThrow(() -> new NotFoundException("Alumno no encontrado"));
+                Curso curso = cursoRepository.findById(form.getCursoId())
+                                .orElseThrow(() -> new NotFoundException("Curso no encontrado"));
+
+                LocalDate fecha = resolverFecha(form.getFechaMatricula(), matricula.getFechaMatricula());
+                validarFechaEnRango(fecha, curso);
+
+                boolean relacionCambiada = !matricula.getAlumno().getId().equals(alumno.getId())
+                                || !matricula.getCurso().getId().equals(curso.getId());
+
+                if (matricula.getEstado() == EstadoMatricula.ACTIVA
+                                && relacionCambiada
+                                && matriculaRepository.existsByAlumnoIdAndCursoIdAndEstado(
+                                                alumno.getId(), curso.getId(), EstadoMatricula.ACTIVA)) {
+                        log.warn("Actualización bloqueada por duplicado ACTIVO: matriculaId={}, alumnoId={}, cursoId={}",
+                                        id, alumno.getId(), curso.getId());
+                        throw new BusinessException(
+                                        "No se permite una matrícula ACTIVA duplicada para el mismo alumno y curso");
+                }
+
+                matricula.setAlumno(alumno);
+                matricula.setCurso(curso);
+                matricula.setFechaMatricula(fecha);
+
+                Matricula guardada = matriculaRepository.save(matricula);
+                log.info("Matrícula actualizada → id={}, alumno='{}', curso='{}', estado={}",
+                                guardada.getId(), alumno.getNombre(), curso.getNombre(), guardada.getEstado());
+                return guardada;
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────
         // * 🔵 anular() → borrado lógico (cambia estado de ACTIVA a ANULADA)
         // ─────────────────────────────────────────────────────────────────────────
 
@@ -142,7 +183,7 @@ public class MatriculaService {
         // TODO: validar que el estado actual sea ACTIVA antes de anular (ejercicio
         // avanzado)
         @Transactional
-        public void anular(Long id) {
+        public void anular(Integer id) {
                 log.debug("Anulando matrícula id={}", id);
                 Matricula matricula = matriculaRepository.findById(id)
                                 .orElseThrow(() -> new NotFoundException("Matrícula no encontrada"));
@@ -162,12 +203,25 @@ public class MatriculaService {
         // ! borrar() → elimina el registro definitivamente (útil para limpiar datos de
         // prueba).
         @Transactional
-        public void borrar(Long id) {
+        public void borrar(Integer id) {
                 log.debug("Borrando físicamente matrícula id={}", id);
                 Matricula matricula = matriculaRepository.findById(id)
                                 .orElseThrow(() -> new NotFoundException("Matrícula no encontrada"));
 
                 matriculaRepository.delete(matricula);
                 log.info("Matrícula eliminada físicamente → id={}", id);
+        }
+
+        private LocalDate resolverFecha(LocalDate fechaFormulario, LocalDate fechaPorDefecto) {
+                return fechaFormulario == null ? fechaPorDefecto : fechaFormulario;
+        }
+
+        private void validarFechaEnRango(LocalDate fecha, Curso curso) {
+                if (fecha.isBefore(curso.getFechaInicio()) || fecha.isAfter(curso.getFechaFin())) {
+                        log.warn("Matrícula rechazada: fecha={} fuera de rango [{}, {}]",
+                                        fecha, curso.getFechaInicio(), curso.getFechaFin());
+                        throw new BusinessException(
+                                        "La fecha de matrícula debe estar entre el inicio y fin del curso");
+                }
         }
 }

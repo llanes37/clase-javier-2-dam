@@ -43,7 +43,7 @@ public class Alumno {
     // alumnoRepository.save(alumno).
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     // * nullable=false → genera NOT NULL en el esquema SQL de la tabla
     // * length=120 → VARCHAR(120) en la columna de la BD
@@ -70,7 +70,7 @@ public class Alumno {
     // ? El setter de id no existe: el ID lo asigna la BD, nunca el código de
     // negocio.
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

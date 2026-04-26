@@ -60,17 +60,75 @@
       <p class="text-muted small">Los parametros van en la URL. Haz clic en los enlaces:</p>
       <ul class="list-group">
         <li class="list-group-item">
-          <a href="{{ url_for('saluda', nombre='Joaquin') }}">/saluda/Joaquin</a>
-          <small class="text-muted d-block">Parametro: nombre (string)</small>
+          <a href="{{ url_for('saluda', nombre='Javier', apellido='Garcia', edad=20) }}">/saluda/Javier/Garcia/20</a>
+          <small class="text-muted d-block">Parametros: nombre (string), apellido (string), edad (int)</small>
         </li>
         <li class="list-group-item">
           <a href="{{ url_for('suma', a=3, b=5) }}">/suma/3/5</a>
           <small class="text-muted d-block">Parametros tipados: int (3) + int (5)</small>
         </li>
+        <li class="list-group-item">
+          <a href="{{ url_for('resta', a=8, b=2) }}">/resta/8/2</a>
+          <small class="text-muted d-block">Parametros tipados: int (8) - int (2)</small>
+        </li>
+        <li class="list-group-item">
+          <a href="{{ url_for('multiplicacion', a=4, b=6) }}">/multiplicacion/4/6</a>
+          <small class="text-muted d-block">Parametros tipados: int (4) * int (6)</small>
+        </li>
       </ul>
+
+      <div class="mt-4 p-4 rounded-4 border" style="background: linear-gradient(135deg, #0f172a, #1e293b); border-color: #334155 !important;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0 text-white">Calculadora Profesional</h6>
+          <small class="text-info">Resultado en modal</small>
+        </div>
+        <div class="row g-2">
+          <div class="col-12 col-md-5">
+            <input type="number" class="form-control form-control-lg" id="numero_a" placeholder="Primer numero">
+          </div>
+          <div class="col-12 col-md-5">
+            <input type="number" class="form-control form-control-lg" id="numero_b" placeholder="Segundo numero">
+          </div>
+          <div class="col-12 col-md-2 d-grid">
+            <button class="btn btn-light btn-lg" onclick="limpiarCalculadora()">Limpiar</button>
+          </div>
+        </div>
+        <div class="row g-2 mt-2">
+          <div class="col-12 col-md-4 d-grid">
+            <button class="btn btn-success btn-lg" onclick="calcularOperacion('suma')">Suma</button>
+          </div>
+          <div class="col-12 col-md-4 d-grid">
+            <button class="btn btn-warning btn-lg" onclick="calcularOperacion('resta')">Resta</button>
+          </div>
+          <div class="col-12 col-md-4 d-grid">
+            <button class="btn btn-primary btn-lg" onclick="calcularOperacion('multiplicacion')">Multiplicacion</button>
+          </div>
+        </div>
+      </div>
+
       <div class="code-block mt-3 small">
-        <code>@app.route("/saluda/&lt;nombre&gt;")</code><br>
-        <code>def saluda(nombre: str): ...</code>
+        <code>@app.route("/saluda/&lt;nombre&gt;/&lt;apellido&gt;/&lt;int:edad&gt;")</code><br>
+        <code>def saluda(nombre: str, apellido: str, edad: int): ...</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalResultadoOperacion" tabindex="-1" aria-labelledby="modalResultadoOperacionLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 20px; overflow: hidden;">
+        <div class="modal-header text-white border-0" style="background: linear-gradient(90deg, #0ea5e9, #2563eb);">
+          <h5 class="modal-title fw-bold" id="modalResultadoOperacionLabel">Resultado de la operacion</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4" style="background: #f8fafc;">
+          <p class="text-muted mb-2">Operacion ejecutada en el servidor:</p>
+          <div id="resultadoOperacionExpresion" class="h5 fw-semibold mb-3 text-dark"></div>
+          <div class="p-3 rounded-3" style="background: #dbeafe; border: 1px solid #93c5fd;">
+            <div class="small text-uppercase text-primary fw-bold">Resultado</div>
+            <div id="resultadoOperacionValor" class="display-6 fw-bold text-primary mb-0"></div>
+          </div>
+          <div id="resultadoOperacionError" class="alert alert-danger mt-3 d-none mb-0"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -84,17 +142,79 @@
       <p class="text-muted small">Los parametros van DESPUES del ? sin cambiar la ruta.</p>
       <ul class="list-group">
         <li class="list-group-item">
-          <a href="{{ url_for('buscar') }}?q=flask&page=1">/buscar?q=flask&page=1</a>
+          <button type="button" class="btn btn-outline-warning btn-sm fw-semibold" onclick="mostrarResultadoQueryString('flask', 1)">
+            Ver /buscar?q=flask&page=1
+          </button>
           <small class="text-muted d-block">Busqueda: flask, pagina: 1</small>
         </li>
         <li class="list-group-item">
-          <a href="{{ url_for('buscar') }}?q=python&page=2">/buscar?q=python&page=2</a>
+          <button type="button" class="btn btn-outline-warning btn-sm fw-semibold" onclick="mostrarResultadoQueryString('python', 2)">
+            Ver /buscar?q=python&page=2
+          </button>
           <small class="text-muted d-block">Busqueda: python, pagina: 2</small>
         </li>
       </ul>
+
+      <div class="mt-3 p-4 rounded-4 border" style="background: linear-gradient(135deg, #ffffff, #fff7ed); border-color: #fdba74 !important;">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h6 class="mb-0" style="color: #9a3412;">Probar query personalizada</h6>
+          <small class="text-muted">Resultado en modal</small>
+        </div>
+        <div class="row g-2">
+          <div class="col-12 col-md-7">
+            <input type="text" id="query_q" class="form-control form-control-lg" placeholder="q (ej: flask)">
+          </div>
+          <div class="col-12 col-md-3">
+            <input type="number" id="query_page" class="form-control form-control-lg" min="1" value="1" placeholder="page">
+          </div>
+          <div class="col-12 col-md-2 d-grid">
+            <button type="button" class="btn btn-lg text-white" style="background: linear-gradient(90deg, #f97316, #ea580c);" onclick="buscarDesdeFormularioQuery()">
+              Buscar
+            </button>
+          </div>
+        </div>
+      </div>
+
       <div class="code-block mt-3 small">
         <code>q = request.args.get("q", "")</code><br>
         <code>page = request.args.get("page", 1)</code>
+      </div>
+    </div>
+  </div>
+
+  <div class="modal fade" id="modalResultadoQuery" tabindex="-1" aria-labelledby="modalResultadoQueryLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content border-0 shadow-lg" style="border-radius: 22px; overflow: hidden;">
+        <div class="modal-header border-0 text-white" style="background: linear-gradient(90deg, #f97316, #ea580c);">
+          <h5 class="modal-title fw-bold" id="modalResultadoQueryLabel">Resultado Query String</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body p-4" style="background: linear-gradient(180deg, #fff7ed, #ffffff);">
+          <p class="mb-2 text-muted">Peticion ejecutada:</p>
+          <div id="queryEndpointTexto" class="fw-semibold mb-3" style="color: #9a3412;"></div>
+
+          <div class="row g-3">
+            <div class="col-6">
+              <div class="p-3 rounded-3 border h-100" style="background: #ffffff; border-color: #fed7aa !important;">
+                <div class="small text-uppercase fw-bold" style="color: #9a3412;">Termino (q)</div>
+                <div id="queryValorQ" class="h5 mb-0 mt-1 text-dark"></div>
+              </div>
+            </div>
+            <div class="col-6">
+              <div class="p-3 rounded-3 border h-100" style="background: #ffffff; border-color: #fed7aa !important;">
+                <div class="small text-uppercase fw-bold" style="color: #9a3412;">Pagina</div>
+                <div id="queryValorPage" class="h5 mb-0 mt-1 text-dark"></div>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-3 p-3 rounded-3 border" style="background: #ffedd5; border-color: #fdba74 !important;">
+            <div class="small text-uppercase fw-bold" style="color: #9a3412;">Total de resultados</div>
+            <div id="queryTotalResultados" class="display-6 fw-bold mb-0" style="color: #c2410c;"></div>
+          </div>
+
+          <div id="queryErrorBox" class="alert alert-danger d-none mt-3 mb-0"></div>
+        </div>
       </div>
     </div>
   </div>
@@ -106,13 +226,16 @@
     </div>
     <div class="card-body">
       <p class="text-muted small">Endpoints que devuelven JSON (formato de datos ligero).</p>
-      <ul class="list-group">
+      
+      <!-- APIs básicas -->
+      <h6 class="mt-4 mb-3">APIs Básicas:</h6>
+      <ul class="list-group mb-4">
         <li class="list-group-item">
-          <code>GET</code> <a href="{{ url_for('api_echo') }}?q=hola">/api/echo?q=hola</a>
+          <code>GET</code> <a href="{{ url_for('api_echo') }}?q=hola" target="_blank">/api/echo?q=hola</a>
           <small class="text-muted d-block">Devuelve: {"ok": true, "echo": "hola"}</small>
         </li>
         <li class="list-group-item">
-        <code>GET</code> <a href="{{ url_for('api_health') }}">/api/health</a>
+          <code>GET</code> <a href="{{ url_for('api_health') }}" target="_blank">/api/health</a>
           <small class="text-muted d-block">Estado de la API: {"status": "ok"}</small>
         </li>
         <li class="list-group-item">
@@ -122,9 +245,42 @@
           </small>
         </li>
       </ul>
+
+      <!-- API de Mejores Juegos -->
+      <h6 class="mt-4 mb-3">🎮 API de Mejores Videojuegos (Diciembre 2025):</h6>
+      <div class="alert alert-success" role="alert">
+        <strong>✨ Actualizado:</strong> 70 juegos en 12 categorías desde Steam, Epic Games, GOG, itch.io, GameJolt y Ubisoft Connect. Los más valorados actualmente.
+      </div>
+
+      <div class="row mb-3">
+        <div class="col-12">
+          <label class="form-label"><strong>Selecciona una categoría:</strong></label>
+          <div class="d-flex flex-wrap gap-2">
+            <button class="btn btn-outline-danger" onclick="cargarMejoresJuegos('accion')">🔥 Acción</button>
+            <button class="btn btn-outline-primary" onclick="cargarMejoresJuegos('aventura')">🗺️ Aventura</button>
+            <button class="btn btn-outline-success" onclick="cargarMejoresJuegos('rpg')">⚔️ RPG</button>
+            <button class="btn btn-outline-warning" onclick="cargarMejoresJuegos('deportes')">⚽ Deportes</button>
+            <button class="btn btn-outline-info" onclick="cargarMejoresJuegos('estrategia')">🏰 Estrategia</button>
+            <button class="btn btn-outline-secondary" onclick="cargarMejoresJuegos('puzzle')">🧩 Puzzle</button>
+            <button class="btn btn-outline-dark" onclick="cargarMejoresJuegos('horror')">👻 Horror</button>
+            <button class="btn btn-outline-light" onclick="cargarMejoresJuegos('shooter')">🔫 Shooter</button>
+            <button class="btn btn-outline-light" style="color: #333;" onclick="cargarMejoresJuegos('indie')">� Indie</button>
+            <button class="btn btn-outline-light" style="color: #333;" onclick="cargarMejoresJuegos('simulacion')">�🎯 Simulación</button>
+            <button class="btn btn-outline-light" style="color: #333;" onclick="cargarMejoresJuegos('multijugador')">🌐 Multijugador</button>
+            <button class="btn btn-outline-light" style="color: #333;" onclick="cargarMejoresJuegos('gratis')">🆓 Gratis</button>
+            <button class="btn btn-primary" onclick="cargarMejoresJuegos()">📊 Todas (70 juegos)</button>
+          </div>
+        </div>
+      </div>
+
+      <div id="mejores-juegos-container" class="mt-4"></div>
+
       <div class="code-block mt-3 small">
-        <!-- * Respuesta JSON generada en el backend -->
-        <code>return jsonify(ok=True, echo=q)</code>
+        <strong>Endpoints:</strong><br>
+        <code>GET /api/mejores-juegos</code> - Todas las 12 categorías (70 juegos)<br>
+        <code>GET /api/mejores-juegos/[categoria]</code> - Categoría específica<br>
+        <strong>Categorías disponibles:</strong> rpg, accion, aventura, shooter, horror, estrategia, indie, simulacion, deportes, puzzle, multijugador, gratis<br>
+        <small class="text-muted">Incluye información de plataformas: Steam, Epic Games, GOG, itch.io, GameJolt, Ubisoft Connect</small>
       </div>
     </div>
   </div>
@@ -149,7 +305,698 @@
     </div>
   </div>
 
-  <!-- SECCION 6: RECURSOS -->
+  <!-- ! SECCION 6: CRUD VIDEOJUEGOS - ESTILO NEON GAMING -->
+  <style>
+    /* ============ ESTILOS NEON GAMING ============ */
+    .neon-card {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+      border: 2px solid #00ff88;
+      border-radius: 20px;
+      box-shadow: 
+        0 0 20px rgba(0, 255, 136, 0.3),
+        0 0 40px rgba(0, 255, 136, 0.1),
+        inset 0 0 60px rgba(0, 255, 136, 0.05);
+      overflow: hidden;
+      position: relative;
+    }
+
+    .neon-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      left: -50%;
+      width: 200%;
+      height: 200%;
+      background: linear-gradient(
+        45deg,
+        transparent,
+        transparent 40%,
+        rgba(0, 255, 136, 0.1) 50%,
+        transparent 60%,
+        transparent
+      );
+      animation: shine 3s infinite;
+    }
+
+    @keyframes shine {
+      0% { transform: translateX(-100%) rotate(45deg); }
+      100% { transform: translateX(100%) rotate(45deg); }
+    }
+
+    .neon-header {
+      background: linear-gradient(90deg, #ff006e, #8338ec, #3a86ff, #00ff88);
+      background-size: 300% 300%;
+      animation: gradient-flow 4s ease infinite;
+      padding: 20px;
+      border-bottom: 2px solid #00ff88;
+      position: relative;
+      z-index: 1;
+    }
+
+    @keyframes gradient-flow {
+      0% { background-position: 0% 50%; }
+      50% { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .neon-title {
+      color: #fff;
+      text-shadow: 
+        0 0 10px #00ff88,
+        0 0 20px #00ff88,
+        0 0 30px #00ff88,
+        0 0 40px #00ff88;
+      font-family: 'Arial Black', sans-serif;
+      font-size: 1.8rem;
+      letter-spacing: 3px;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .neon-title::before {
+      content: '🎮';
+      font-size: 2rem;
+      animation: bounce 1s ease infinite;
+    }
+
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-8px); }
+    }
+
+    .neon-body {
+      padding: 30px;
+      position: relative;
+      z-index: 1;
+    }
+
+    /* Botones Neon */
+    .btn-neon {
+      position: relative;
+      padding: 12px 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      overflow: hidden;
+      transition: all 0.3s ease;
+    }
+
+    .btn-neon-green {
+      background: linear-gradient(45deg, #00ff88, #00cc6a);
+      color: #000;
+      box-shadow: 
+        0 0 15px rgba(0, 255, 136, 0.5),
+        0 0 30px rgba(0, 255, 136, 0.3);
+    }
+
+    .btn-neon-green:hover {
+      transform: scale(1.1) translateY(-3px);
+      box-shadow: 
+        0 0 25px rgba(0, 255, 136, 0.8),
+        0 0 50px rgba(0, 255, 136, 0.5),
+        0 0 75px rgba(0, 255, 136, 0.3);
+    }
+
+    .btn-neon-pink {
+      background: linear-gradient(45deg, #ff006e, #ff4d94);
+      color: #fff;
+      box-shadow: 
+        0 0 15px rgba(255, 0, 110, 0.5),
+        0 0 30px rgba(255, 0, 110, 0.3);
+    }
+
+    .btn-neon-pink:hover {
+      transform: scale(1.1) translateY(-3px);
+      box-shadow: 
+        0 0 25px rgba(255, 0, 110, 0.8),
+        0 0 50px rgba(255, 0, 110, 0.5),
+        0 0 75px rgba(255, 0, 110, 0.3);
+    }
+
+    .btn-neon-blue {
+      background: linear-gradient(45deg, #3a86ff, #00d4ff);
+      color: #fff;
+      box-shadow: 
+        0 0 15px rgba(58, 134, 255, 0.5),
+        0 0 30px rgba(58, 134, 255, 0.3);
+    }
+
+    .btn-neon-blue:hover {
+      transform: scale(1.1) translateY(-3px);
+      box-shadow: 
+        0 0 25px rgba(58, 134, 255, 0.8),
+        0 0 50px rgba(58, 134, 255, 0.5),
+        0 0 75px rgba(58, 134, 255, 0.3);
+    }
+
+    .btn-neon-purple {
+      background: linear-gradient(45deg, #8338ec, #b366ff);
+      color: #fff;
+      box-shadow: 
+        0 0 15px rgba(131, 56, 236, 0.5),
+        0 0 30px rgba(131, 56, 236, 0.3);
+    }
+
+    .btn-neon-purple:hover {
+      transform: scale(1.1) translateY(-3px);
+      box-shadow: 
+        0 0 25px rgba(131, 56, 236, 0.8),
+        0 0 50px rgba(131, 56, 236, 0.5),
+        0 0 75px rgba(131, 56, 236, 0.3);
+    }
+
+    .btn-neon-red {
+      background: linear-gradient(45deg, #ff0000, #ff4444);
+      color: #fff;
+      box-shadow: 
+        0 0 15px rgba(255, 0, 0, 0.5),
+        0 0 30px rgba(255, 0, 0, 0.3);
+    }
+
+    .btn-neon-red:hover {
+      transform: scale(1.1) translateY(-3px);
+      box-shadow: 
+        0 0 25px rgba(255, 0, 0, 0.8),
+        0 0 50px rgba(255, 0, 0, 0.5),
+        0 0 75px rgba(255, 0, 0, 0.3);
+    }
+
+    /* Inputs Neon */
+    .neon-input {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #00ff88;
+      border-radius: 10px;
+      color: #fff;
+      padding: 12px 15px;
+      transition: all 0.3s ease;
+    }
+
+    .neon-input::placeholder {
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .neon-input:focus {
+      outline: none;
+      background: rgba(255, 255, 255, 0.15);
+      box-shadow: 
+        0 0 15px rgba(0, 255, 136, 0.5),
+        0 0 30px rgba(0, 255, 136, 0.3);
+      border-color: #00ff88;
+    }
+
+    .neon-select {
+      background: rgba(255, 255, 255, 0.1);
+      border: 2px solid #8338ec;
+      border-radius: 10px;
+      color: #fff;
+      padding: 12px 15px;
+      transition: all 0.3s ease;
+    }
+
+    .neon-select option {
+      background: #1a1a2e;
+      color: #fff;
+    }
+
+    .neon-select:focus {
+      outline: none;
+      box-shadow: 
+        0 0 15px rgba(131, 56, 236, 0.5),
+        0 0 30px rgba(131, 56, 236, 0.3);
+    }
+
+    .neon-label {
+      color: #00ff88;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+      font-weight: bold;
+      letter-spacing: 1px;
+      margin-bottom: 8px;
+      display: block;
+    }
+
+    /* Tabla Neon */
+    .neon-table {
+      width: 100%;
+      border-collapse: separate;
+      border-spacing: 0 10px;
+    }
+
+    .neon-table thead th {
+      background: linear-gradient(90deg, #8338ec, #3a86ff);
+      color: #fff;
+      padding: 15px;
+      text-transform: uppercase;
+      letter-spacing: 2px;
+      font-size: 0.9rem;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      border: none;
+    }
+
+    .neon-table thead th:first-child {
+      border-radius: 15px 0 0 15px;
+    }
+
+    .neon-table thead th:last-child {
+      border-radius: 0 15px 15px 0;
+    }
+
+    .neon-table tbody tr {
+      background: rgba(255, 255, 255, 0.05);
+      transition: all 0.3s ease;
+    }
+
+    .neon-table tbody tr:hover {
+      background: rgba(0, 255, 136, 0.1);
+      transform: scale(1.02);
+      box-shadow: 0 0 20px rgba(0, 255, 136, 0.3);
+    }
+
+    .neon-table tbody td {
+      padding: 15px;
+      color: #fff;
+      border: none;
+      vertical-align: middle;
+    }
+
+    .neon-table tbody td:first-child {
+      border-radius: 15px 0 0 15px;
+    }
+
+    .neon-table tbody td:last-child {
+      border-radius: 0 15px 15px 0;
+    }
+
+    .neon-badge {
+      background: linear-gradient(45deg, #ff006e, #8338ec);
+      color: #fff;
+      padding: 8px 15px;
+      border-radius: 20px;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(255, 255, 255, 0.5);
+      animation: pulse 2s ease infinite;
+    }
+
+    @keyframes pulse {
+      0%, 100% { box-shadow: 0 0 10px rgba(255, 0, 110, 0.5); }
+      50% { box-shadow: 0 0 25px rgba(255, 0, 110, 0.8); }
+    }
+
+    .game-name {
+      color: #00ff88;
+      font-weight: bold;
+      text-shadow: 0 0 10px rgba(0, 255, 136, 0.5);
+      font-size: 1.1rem;
+    }
+
+    .genre-tag {
+      background: rgba(58, 134, 255, 0.3);
+      color: #3a86ff;
+      padding: 5px 12px;
+      border-radius: 15px;
+      border: 1px solid #3a86ff;
+      font-size: 0.85rem;
+    }
+
+    .shared-friends {
+      color: #ff006e;
+      font-style: italic;
+    }
+
+    /* Modal Neon */
+    .neon-modal .modal-content {
+      background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+      border: 2px solid #8338ec;
+      border-radius: 20px;
+      box-shadow: 0 0 50px rgba(131, 56, 236, 0.5);
+    }
+
+    .neon-modal .modal-header {
+      background: linear-gradient(90deg, #8338ec, #ff006e);
+      border-bottom: none;
+      border-radius: 17px 17px 0 0;
+    }
+
+    .neon-modal .modal-title {
+      color: #fff;
+      text-shadow: 0 0 20px rgba(255, 255, 255, 0.5);
+      font-weight: bold;
+    }
+
+    .neon-modal .modal-body {
+      padding: 30px;
+    }
+
+    .neon-modal .modal-footer {
+      border-top: 1px solid rgba(131, 56, 236, 0.3);
+    }
+
+    .neon-modal .btn-close {
+      filter: invert(1);
+    }
+
+    /* Efectos de partículas decorativas */
+    .particles {
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      top: 0;
+      left: 0;
+      pointer-events: none;
+    }
+
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: #00ff88;
+      border-radius: 50%;
+      animation: float 4s ease-in-out infinite;
+      opacity: 0.6;
+    }
+
+    @keyframes float {
+      0%, 100% { transform: translateY(0) rotate(0deg); opacity: 0; }
+      25% { opacity: 0.8; }
+      50% { transform: translateY(-100px) rotate(180deg); opacity: 0.4; }
+      100% { transform: translateY(-200px) rotate(360deg); opacity: 0; }
+    }
+
+    .section-divider {
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #00ff88, #8338ec, #ff006e, transparent);
+      margin: 25px 0;
+      border-radius: 2px;
+    }
+
+    .subtitle-neon {
+      color: #fff;
+      font-size: 1.3rem;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .subtitle-neon::before {
+      content: '⚡';
+      animation: zap 0.5s ease infinite alternate;
+    }
+
+    @keyframes zap {
+      from { opacity: 0.5; transform: scale(0.9); }
+      to { opacity: 1; transform: scale(1.1); }
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 40px;
+      color: rgba(255, 255, 255, 0.5);
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 15px;
+      animation: wobble 2s ease infinite;
+    }
+
+    @keyframes wobble {
+      0%, 100% { transform: rotate(-5deg); }
+      50% { transform: rotate(5deg); }
+    }
+  </style>
+
+  <div class="neon-card mb-4">
+    <!-- Partículas decorativas -->
+    <div class="particles">
+      <div class="particle" style="left: 10%; animation-delay: 0s;"></div>
+      <div class="particle" style="left: 25%; animation-delay: 1s;"></div>
+      <div class="particle" style="left: 50%; animation-delay: 2s;"></div>
+      <div class="particle" style="left: 75%; animation-delay: 0.5s;"></div>
+      <div class="particle" style="left: 90%; animation-delay: 1.5s;"></div>
+    </div>
+
+    <div class="neon-header">
+      <h5 class="neon-title">CRUD - GESTIÓN DE VIDEOJUEGOS</h5>
+    </div>
+
+    <div class="neon-body">
+      
+      <!-- Formulario para agregar videojuego AMPLIADO -->
+      <div class="subtitle-neon">Registrar nuevo videojuego</div>
+      <form action="{{ url_for('agregar_videojuego') }}" method="post" class="mb-4">
+        <div class="row gy-3">
+          <div class="col-12 col-md-4">
+            <label for="nombre_juego" class="neon-label">🎮 Nombre del juego:</label>
+            <input type="text" id="nombre_juego" name="nombre_juego" class="form-control neon-input" placeholder="Ej: Zelda, GTA, FIFA..." required>
+          </div>
+          <div class="col-12 col-md-4">
+            <label for="genero" class="neon-label">🏷️ Género:</label>
+            <select id="genero" name="genero" class="form-select neon-select" required>
+              <option value="">-- Selecciona --</option>
+              <option value="Acción">🔥 Acción</option>
+              <option value="Aventura">🗺️ Aventura</option>
+              <option value="RPG">⚔️ RPG</option>
+              <option value="Deportes">⚽ Deportes</option>
+              <option value="Estrategia">🧠 Estrategia</option>
+              <option value="Puzzle">🧩 Puzzle</option>
+              <option value="Terror">👻 Terror</option>
+              <option value="Shooter">🎯 Shooter</option>
+            </select>
+          </div>
+          <div class="col-12 col-md-4">
+            <label for="comprador" class="neon-label">👤 Comprador:</label>
+            <input type="text" id="comprador" name="comprador" class="form-control neon-input" placeholder="Tu nombre" required>
+          </div>
+          <div class="col-12 col-md-3">
+            <label for="precio" class="neon-label">💰 Precio (€):</label>
+            <input type="number" step="0.01" min="0" id="precio" name="precio" class="form-control neon-input" placeholder="59.99" value="0">
+          </div>
+          <div class="col-12 col-md-6">
+            <label for="descripcion" class="neon-label">📝 Descripción:</label>
+            <textarea id="descripcion" name="descripcion" class="form-control neon-input" rows="2" placeholder="Descripción del videojuego..."></textarea>
+          </div>
+          <div class="col-12 col-md-3 d-flex align-items-center">
+            <div class="form-check" style="margin-top: 25px;">
+              <input class="form-check-input" type="checkbox" id="tiene_a2f" name="tiene_a2f" style="width: 25px; height: 25px; border: 2px solid #00ff88;">
+              <label class="form-check-label neon-label" for="tiene_a2f" style="margin-left: 10px;">🔐 A2F Activo</label>
+            </div>
+          </div>
+          <div class="col-12 d-flex justify-content-center">
+            <button type="submit" class="btn-neon btn-neon-green" style="padding: 15px 50px;">
+              ➕ AGREGAR VIDEOJUEGO
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="section-divider"></div>
+
+      <!-- Tabla de videojuegos -->
+      <div class="subtitle-neon">Videojuegos registrados</div>
+      <div class="table-responsive">
+        <table class="neon-table">
+          <thead>
+            <tr>
+              <th>🆔 ID</th>
+              <th>🎮 Nombre</th>
+              <th>🏷️ Género</th>
+              <th>👤 Comprador</th>
+              <th>� Precio</th>
+              <th>🔐 A2F</th>
+              <th>�👥 Compartido</th>
+              <th>⚡ Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla_videojuegos">
+            <tr>
+              <td colspan="8">
+                <div class="empty-state">
+                  <div class="empty-state-icon">🎮</div>
+                  <p>Cargando videojuegos...</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- ============ SECCION AMIGOS ============ -->
+  <div class="neon-card mb-4" style="border-color: #ff006e;">
+    <div class="particles">
+      <div class="particle" style="left: 15%; animation-delay: 0.2s; background: #ff006e;"></div>
+      <div class="particle" style="left: 45%; animation-delay: 1.2s; background: #ff006e;"></div>
+      <div class="particle" style="left: 80%; animation-delay: 0.7s; background: #ff006e;"></div>
+    </div>
+
+    <div class="neon-header" style="background: linear-gradient(90deg, #ff006e, #8338ec, #ff006e);">
+      <h5 class="neon-title" style="text-shadow: 0 0 10px #ff006e, 0 0 20px #ff006e;">👥 GESTIÓN DE AMIGOS</h5>
+    </div>
+
+    <div class="neon-body">
+      
+      <!-- Formulario para agregar amigo -->
+      <div class="subtitle-neon">Añadir nuevo amigo</div>
+      <form action="{{ url_for('agregar_amigo') }}" method="post" class="mb-4">
+        <div class="row gy-3">
+          <div class="col-12 col-md-4">
+            <label for="nombre_amigo" class="neon-label" style="color: #ff006e;">👤 Nombre:</label>
+            <input type="text" id="nombre_amigo" name="nombre_amigo" class="form-control neon-input" style="border-color: #ff006e;" placeholder="Nombre del amigo" required>
+          </div>
+          <div class="col-12 col-md-4">
+            <label for="email_amigo" class="neon-label" style="color: #ff006e;">📧 Email:</label>
+            <input type="email" id="email_amigo" name="email_amigo" class="form-control neon-input" style="border-color: #ff006e;" placeholder="email@ejemplo.com">
+          </div>
+          <div class="col-12 col-md-4">
+            <label for="plataforma" class="neon-label" style="color: #ff006e;">🎮 Plataforma:</label>
+            <select id="plataforma" name="plataforma" class="form-select neon-select" style="border-color: #ff006e;">
+              <option value="">-- Selecciona --</option>
+              <option value="PC">🖥️ PC</option>
+              <option value="PlayStation">🎮 PlayStation</option>
+              <option value="Xbox">🎯 Xbox</option>
+              <option value="Nintendo">🍄 Nintendo</option>
+              <option value="Mobile">📱 Mobile</option>
+            </select>
+          </div>
+          <div class="col-12 d-flex justify-content-center">
+            <button type="submit" class="btn-neon btn-neon-pink" style="padding: 15px 50px;">
+              ➕ AÑADIR AMIGO
+            </button>
+          </div>
+        </div>
+      </form>
+
+      <div class="section-divider" style="background: linear-gradient(90deg, transparent, #ff006e, #8338ec, transparent);"></div>
+
+      <!-- Tabla de amigos -->
+      <div class="subtitle-neon">Lista de amigos</div>
+      <div class="table-responsive">
+        <table class="neon-table">
+          <thead style="background: linear-gradient(90deg, #ff006e, #8338ec) !important;">
+            <tr>
+              <th>🆔 ID</th>
+              <th>👤 Nombre</th>
+              <th>📧 Email</th>
+              <th>🎮 Plataforma</th>
+              <th>🟢 Estado</th>
+              <th>🕐 Último acceso</th>
+              <th>⚡ Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla_amigos">
+            <tr>
+              <td colspan="7">
+                <div class="empty-state">
+                  <div class="empty-state-icon">👥</div>
+                  <p>No hay amigos registrados</p>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- Modal para editar videojuego -->
+  <div class="modal fade" id="modalEditarVideojuego" tabindex="-1" data-bs-backdrop="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-dialog-centered modal-lg">
+      <div class="modal-content" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid #00ff88; border-radius: 20px;">
+        <div class="modal-header" style="background: linear-gradient(90deg, #00ff88, #3a86ff); border-radius: 17px 17px 0 0;">
+          <h5 class="modal-title" style="color: #000; text-shadow: 0 0 10px rgba(0,255,136,0.5); font-weight: bold;">✏️ Editar Videojuego</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="padding: 30px;">
+          <input type="hidden" id="editar_juego_id">
+          <div class="row gy-3">
+            <div class="col-12 col-md-6">
+              <label for="editar_nombre_juego" class="neon-label">🎮 Nombre del juego:</label>
+              <input type="text" id="editar_nombre_juego" class="form-control neon-input" placeholder="Nombre..." required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label for="editar_genero" class="neon-label">🏷️ Género:</label>
+              <select id="editar_genero" class="form-select neon-select" required>
+                <option value="">-- Selecciona --</option>
+                <option value="Acción">🔥 Acción</option>
+                <option value="Aventura">🗺️ Aventura</option>
+                <option value="RPG">⚔️ RPG</option>
+                <option value="Deportes">⚽ Deportes</option>
+                <option value="Estrategia">🧠 Estrategia</option>
+                <option value="Puzzle">🧩 Puzzle</option>
+                <option value="Terror">👻 Terror</option>
+                <option value="Shooter">🎯 Shooter</option>
+              </select>
+            </div>
+            <div class="col-12 col-md-6">
+              <label for="editar_comprador" class="neon-label">👤 Comprador:</label>
+              <input type="text" id="editar_comprador" class="form-control neon-input" placeholder="Nombre..." required>
+            </div>
+            <div class="col-12 col-md-6">
+              <label for="editar_precio" class="neon-label">💰 Precio (€):</label>
+              <input type="number" step="0.01" min="0" id="editar_precio" class="form-control neon-input" placeholder="59.99" value="0">
+            </div>
+            <div class="col-12">
+              <label for="editar_descripcion" class="neon-label">📝 Descripción:</label>
+              <textarea id="editar_descripcion" class="form-control neon-input" rows="3" placeholder="Descripción del videojuego..."></textarea>
+            </div>
+            <div class="col-12">
+              <div class="form-check" style="margin-top: 10px;">
+                <input class="form-check-input" type="checkbox" id="editar_tiene_a2f" style="width: 25px; height: 25px; border: 2px solid #00ff88;">
+                <label class="form-check-label neon-label" for="editar_tiene_a2f" style="margin-left: 10px;">🔐 A2F Activo</label>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid rgba(0, 255, 136, 0.3);">
+          <button type="button" class="btn-neon btn-neon-red" data-bs-dismiss="modal">❌ Cancelar</button>
+          <button type="button" class="btn-neon btn-neon-green" id="btnGuardarEdicion">💾 Guardar Cambios</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Modal para compartir videojuego (MEJORADO - Sin backdrop que bloquea) -->
+  <div class="modal fade" id="modalCompartir" tabindex="-1" data-bs-backdrop="true" data-bs-keyboard="true">
+    <div class="modal-dialog modal-dialog-centered">
+      <div class="modal-content" style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid #8338ec; border-radius: 20px;">
+        <div class="modal-header" style="background: linear-gradient(90deg, #8338ec, #ff006e); border-radius: 17px 17px 0 0;">
+          <h5 class="modal-title" style="color: #fff; text-shadow: 0 0 10px #fff;">🤝 Compartir videojuego</h5>
+          <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body" style="padding: 30px;">
+          <input type="hidden" id="juego_id_compartir">
+          <div class="mb-3">
+            <label for="amigo_nombre" class="neon-label">👥 Nombre:</label>
+            <input type="text" id="amigo_nombre" class="form-control neon-input" placeholder="Nombre de la persona...">
+          </div>
+          <div class="mb-3">
+            <label for="tipo_relacion" class="neon-label">🏷️ Tipo de relación:</label>
+            <select id="tipo_relacion" class="form-select neon-select">
+              <option value="amigo">👫 Amigo</option>
+              <option value="familiar">👨‍👩‍👧 Familiar</option>
+              <option value="compañero">🎓 Compañero</option>
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer" style="border-top: 1px solid rgba(131, 56, 236, 0.3);">
+          <button type="button" class="btn-neon btn-neon-red" data-bs-dismiss="modal">❌ Cancelar</button>
+          <button type="button" class="btn-neon btn-neon-purple" id="btnCompartir">✨ Compartir</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- SECCION 7: RECURSOS -->
   <div class="card shadow-sm">
     <div class="card-header bg-light">
       <h5 class="mb-0">Recursos</h5>
@@ -163,4 +1010,556 @@
       </ul>
     </div>
   </div>
+
+  <script>
+    // ============ VARIABLES GLOBALES ============
+    let videojuegos = [];
+    let amigos = [];
+    let modalCompartir = null;
+    let modalEditarVideojuego = null;
+    let modalResultadoOperacion = null;
+    let modalResultadoQuery = null;
+
+    // ============ INICIALIZACIÓN ============
+    document.addEventListener('DOMContentLoaded', function() {
+      // Cargar datos
+      cargarVideojuegos();
+      cargarAmigos();
+
+      // Inicializar modales de Bootstrap
+      const modalCompartirElement = document.getElementById('modalCompartir');
+      if (modalCompartirElement) {
+        modalCompartir = new bootstrap.Modal(modalCompartirElement);
+        document.getElementById('btnCompartir').addEventListener('click', compartirVideojuego);
+        modalCompartirElement.addEventListener('hidden.bs.modal', function () {
+          document.getElementById('amigo_nombre').value = '';
+          document.getElementById('tipo_relacion').value = 'amigo';
+        });
+      }
+
+      const modalEditarElement = document.getElementById('modalEditarVideojuego');
+      if (modalEditarElement) {
+        modalEditarVideojuego = new bootstrap.Modal(modalEditarElement);
+        document.getElementById('btnGuardarEdicion').addEventListener('click', guardarEdicionVideojuego);
+      }
+
+      const modalResultadoOperacionElement = document.getElementById('modalResultadoOperacion');
+      if (modalResultadoOperacionElement) {
+        modalResultadoOperacion = new bootstrap.Modal(modalResultadoOperacionElement);
+      }
+
+      const modalResultadoQueryElement = document.getElementById('modalResultadoQuery');
+      if (modalResultadoQueryElement) {
+        modalResultadoQuery = new bootstrap.Modal(modalResultadoQueryElement);
+      }
+    });
+
+    function buscarDesdeFormularioQuery() {
+      const q = (document.getElementById('query_q').value || '').trim();
+      const page = parseInt(document.getElementById('query_page').value, 10);
+      mostrarResultadoQueryString(q, page);
+    }
+
+    function mostrarResultadoQueryString(q, page) {
+      const endpointEl = document.getElementById('queryEndpointTexto');
+      const valorQEl = document.getElementById('queryValorQ');
+      const valorPageEl = document.getElementById('queryValorPage');
+      const totalEl = document.getElementById('queryTotalResultados');
+      const errorEl = document.getElementById('queryErrorBox');
+
+      errorEl.classList.add('d-none');
+      errorEl.textContent = '';
+      endpointEl.textContent = '';
+      valorQEl.textContent = '';
+      valorPageEl.textContent = '';
+      totalEl.textContent = '';
+
+      const qLimpio = (q || '').trim();
+      const pageLimpia = Number.isNaN(page) || page < 1 ? 1 : page;
+
+      fetch(`/buscar?q=${encodeURIComponent(qLimpio)}&page=${pageLimpia}`)
+        .then(response => response.json())
+        .then(data => {
+          endpointEl.textContent = `/buscar?q=${data.q}&page=${data.page}`;
+          valorQEl.textContent = data.q || '(vacio)';
+          valorPageEl.textContent = data.page;
+          totalEl.textContent = data.total_results;
+
+          if (modalResultadoQuery) {
+            modalResultadoQuery.show();
+          }
+        })
+        .catch(() => {
+          errorEl.classList.remove('d-none');
+          errorEl.textContent = 'No se pudo obtener el resultado. Revisa que el servidor este activo.';
+          if (modalResultadoQuery) {
+            modalResultadoQuery.show();
+          }
+        });
+    }
+
+    function limpiarCalculadora() {
+      document.getElementById('numero_a').value = '';
+      document.getElementById('numero_b').value = '';
+    }
+
+    function calcularOperacion(operacion) {
+      const a = parseInt(document.getElementById('numero_a').value, 10);
+      const b = parseInt(document.getElementById('numero_b').value, 10);
+      const expresionEl = document.getElementById('resultadoOperacionExpresion');
+      const valorEl = document.getElementById('resultadoOperacionValor');
+      const errorEl = document.getElementById('resultadoOperacionError');
+      const tituloEl = document.getElementById('modalResultadoOperacionLabel');
+
+      errorEl.classList.add('d-none');
+      errorEl.textContent = '';
+      expresionEl.textContent = '';
+      valorEl.textContent = '';
+
+      if (Number.isNaN(a) || Number.isNaN(b)) {
+        errorEl.classList.remove('d-none');
+        errorEl.textContent = 'Debes ingresar dos numeros validos.';
+        if (modalResultadoOperacion) {
+          modalResultadoOperacion.show();
+        }
+        return;
+      }
+
+      fetch(`/api/calculadora/${operacion}/${a}/${b}`)
+        .then(response => response.json())
+        .then(data => {
+          if (!data.ok) {
+            throw new Error(data.error || 'No se pudo calcular la operacion');
+          }
+
+          const simbolo = data.operacion === 'suma' ? '+' : (data.operacion === 'resta' ? '-' : 'x');
+          const nombreOperacion = data.operacion.charAt(0).toUpperCase() + data.operacion.slice(1);
+
+          tituloEl.textContent = `Resultado: ${nombreOperacion}`;
+          expresionEl.textContent = `${data.a} ${simbolo} ${data.b}`;
+          valorEl.textContent = data.resultado;
+
+          if (modalResultadoOperacion) {
+            modalResultadoOperacion.show();
+          }
+        })
+        .catch(error => {
+          errorEl.classList.remove('d-none');
+          errorEl.textContent = error.message || 'Error inesperado al calcular.';
+          if (modalResultadoOperacion) {
+            modalResultadoOperacion.show();
+          }
+        });
+    }
+
+    // ============ CRUD VIDEOJUEGOS ============
+
+    // LEER - Obtener todos los videojuegos
+    function cargarVideojuegos() {
+      fetch('/api/videojuegos')
+        .then(response => response.json())
+        .then(data => {
+          videojuegos = data.videojuegos || [];
+          renderizarTablaVideojuegos();
+        })
+        .catch(error => console.error('Error cargando videojuegos:', error));
+    }
+
+    // RENDERIZAR - Mostrar tabla de videojuegos
+    function renderizarTablaVideojuegos() {
+      const tabla = document.getElementById('tabla_videojuegos');
+      
+      if (videojuegos.length === 0) {
+        tabla.innerHTML = `
+          <tr>
+            <td colspan="8">
+              <div class="empty-state">
+                <div class="empty-state-icon">🕹️</div>
+                <p style="color: rgba(255,255,255,0.5);">No hay videojuegos registrados. ¡Agrega el primero!</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tabla.innerHTML = videojuegos.map(juego => {
+        // Formatear compartidos
+        let compartidosTexto = '—';
+        if (juego.compartido_con && juego.compartido_con.length > 0) {
+          compartidosTexto = juego.compartido_con.map(c => {
+            if (typeof c === 'object') {
+              const icono = c.tipo === 'familiar' ? '👨‍👩‍👧' : (c.tipo === 'compañero' ? '🎓' : '👫');
+              return `${icono} ${c.nombre}`;
+            }
+            return `👫 ${c}`;
+          }).join(', ');
+        }
+
+        return `
+          <tr>
+            <td><span class="neon-badge">#${juego.id}</span></td>
+            <td>
+              <span class="game-name">${juego.nombre}</span>
+              ${juego.descripcion ? `<br><small style="color: rgba(255,255,255,0.5);">${juego.descripcion.substring(0, 50)}${juego.descripcion.length > 50 ? '...' : ''}</small>` : ''}
+            </td>
+            <td><span class="genre-tag">${juego.genero}</span></td>
+            <td style="color: #fff;">👤 ${juego.comprador}</td>
+            <td style="color: #00ff88; font-weight: bold;">💰 ${juego.precio ? juego.precio.toFixed(2) : '0.00'}€</td>
+            <td style="text-align: center;">
+              ${juego.tiene_a2f ? '<span style="color: #00ff88; font-size: 1.5rem;">🔐</span>' : '<span style="color: #ff4444; font-size: 1.5rem;">🔓</span>'}
+            </td>
+            <td class="shared-friends" style="max-width: 150px;">${compartidosTexto}</td>
+            <td>
+              <button class="btn-neon btn-neon-green" style="padding: 8px 12px; font-size: 0.75rem; margin: 2px;" onclick="abrirModalEditar(${juego.id})">✏️</button>
+              <button class="btn-neon btn-neon-blue" style="padding: 8px 12px; font-size: 0.75rem; margin: 2px;" onclick="abrirModalCompartir(${juego.id})">🤝</button>
+              <button class="btn-neon btn-neon-red" style="padding: 8px 12px; font-size: 0.75rem; margin: 2px;" onclick="eliminarVideojuego(${juego.id})">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // ABRIR MODAL para compartir
+    function abrirModalCompartir(id) {
+      document.getElementById('juego_id_compartir').value = id;
+      if (modalCompartir) {
+        modalCompartir.show();
+      }
+    }
+
+    // ABRIR MODAL para editar videojuego
+    function abrirModalEditar(id) {
+      const juego = videojuegos.find(j => j.id === id);
+      if (!juego) return;
+
+      document.getElementById('editar_juego_id').value = id;
+      document.getElementById('editar_nombre_juego').value = juego.nombre;
+      document.getElementById('editar_genero').value = juego.genero;
+      document.getElementById('editar_comprador').value = juego.comprador;
+      document.getElementById('editar_precio').value = juego.precio || 0;
+      document.getElementById('editar_descripcion').value = juego.descripcion || '';
+      document.getElementById('editar_tiene_a2f').checked = juego.tiene_a2f || false;
+
+      if (modalEditarVideojuego) {
+        modalEditarVideojuego.show();
+      }
+    }
+
+    // GUARDAR edición de videojuego
+    function guardarEdicionVideojuego() {
+      const id = parseInt(document.getElementById('editar_juego_id').value);
+      const nombre = document.getElementById('editar_nombre_juego').value.trim();
+      const genero = document.getElementById('editar_genero').value;
+      const comprador = document.getElementById('editar_comprador').value.trim();
+      const precio = parseFloat(document.getElementById('editar_precio').value);
+      const descripcion = document.getElementById('editar_descripcion').value.trim();
+      const tieneA2f = document.getElementById('editar_tiene_a2f').checked;
+
+      if (!nombre || !genero || !comprador) {
+        alert('Por favor completa todos los campos obligatorios');
+        return;
+      }
+
+      fetch('/api/videojuegos/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          nombre: nombre,
+          genero: genero,
+          comprador: comprador,
+          precio: precio,
+          descripcion: descripcion,
+          tiene_a2f: tieneA2f
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.ok) {
+          alert('¡Videojuego actualizado correctamente!');
+          if (modalEditarVideojuego) {
+            modalEditarVideojuego.hide();
+          }
+          cargarVideojuegos();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // COMPARTIR videojuego
+    function compartirVideojuego() {
+      const juegoId = parseInt(document.getElementById('juego_id_compartir').value);
+      const amigoNombre = document.getElementById('amigo_nombre').value.trim();
+      const tipoRelacion = document.getElementById('tipo_relacion').value;
+
+      if (!amigoNombre) {
+        alert('Por favor ingresa el nombre');
+        return;
+      }
+
+      fetch('/api/videojuegos/compartir', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ 
+          id: juegoId, 
+          amigo: amigoNombre,
+          tipo_relacion: tipoRelacion
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.ok) {
+          alert('¡Videojuego compartido con ' + amigoNombre + '!');
+          if (modalCompartir) {
+            modalCompartir.hide();
+          }
+          cargarVideojuegos();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // ELIMINAR videojuego
+    function eliminarVideojuego(id) {
+      if (confirm('¿Estás seguro de que quieres eliminar este videojuego?')) {
+        fetch('/api/videojuegos/' + id, { method: 'DELETE' })
+          .then(response => response.json())
+          .then(data => {
+            if (data.ok) {
+              alert('Videojuego eliminado');
+              cargarVideojuegos();
+            } else {
+              alert('Error: ' + data.error);
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+    }
+
+    // ============ API MEJORES JUEGOS ============
+
+    // Cargar mejores juegos por categoría
+    function cargarMejoresJuegos(categoria = null) {
+      const url = categoria ? `/api/mejores-juegos/${categoria}` : '/api/mejores-juegos';
+      const container = document.getElementById('mejores-juegos-container');
+      
+      container.innerHTML = '<div class="text-center"><p style="color: #00ff88;">⏳ Cargando...</p></div>';
+
+      fetch(url)
+        .then(response => response.json())
+        .then(data => {
+          if (data.ok) {
+            if (categoria) {
+              // Mostrar una categoría específica
+              renderizarMejoresJuegos(data.juegos, data.categoria);
+            } else {
+              // Mostrar todas las categorías
+              renderizarTodasLasCategorias(data.mejores_juegos);
+            }
+          } else {
+            container.innerHTML = `<div class="alert alert-danger">${data.error}</div>`;
+          }
+        })
+        .catch(error => {
+          console.error('Error:', error);
+          container.innerHTML = `<div class="alert alert-danger">Error al cargar los datos</div>`;
+        });
+    }
+
+    // Renderizar una categoría específica
+    function renderizarMejoresJuegos(juegos, categoria) {
+      const container = document.getElementById('mejores-juegos-container');
+      
+      const html = `
+        <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid #00ff88; border-radius: 15px; padding: 20px;">
+          <h5 style="color: #00ff88; text-shadow: 0 0 10px #00ff88; margin-bottom: 20px;">
+            📊 ${categoria.toUpperCase()} - ${juegos.length} juegos
+          </h5>
+          
+          ${juegos.map((juego, index) => `
+            <div style="background: rgba(255,255,255,0.05); border-left: 4px solid #3a86ff; padding: 15px; margin-bottom: 15px; border-radius: 8px;">
+              <div class="row align-items-center">
+                <div class="col-md-8">
+                  <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                    <span style="font-size: 1.5rem; color: #ff006e;">⭐</span>
+                    <span style="color: #fff; font-weight: bold; font-size: 1.1rem;">${juego.nombre}</span>
+                    <span style="background: linear-gradient(45deg, #ff006e, #8338ec); padding: 4px 12px; border-radius: 20px; font-size: 0.75rem; color: #fff;">#${index + 1}</span>
+                  </div>
+                  <p style="color: rgba(255,255,255,0.7); margin: 5px 0; font-size: 0.9rem;">
+                    <strong>Desarrollador:</strong> ${juego.desarrollador} | <strong>Año:</strong> ${juego.año}
+                  </p>
+                  <p style="color: rgba(255,255,255,0.6); margin: 8px 0;">
+                    ${juego.descripcion}
+                  </p>
+                  <div style="display: flex; gap: 8px; flex-wrap: wrap; margin-top: 10px;">
+                    ${juego.tags.map(tag => `<span style="background: rgba(58,134,255,0.3); color: #3a86ff; padding: 3px 10px; border-radius: 12px; font-size: 0.8rem;">🏷️ ${tag}</span>`).join('')}
+                  </div>
+                </div>
+                <div class="col-md-4" style="text-align: right;">
+                  <div style="background: linear-gradient(135deg, #00ff88, #3a86ff); padding: 15px; border-radius: 10px; margin-bottom: 10px;">
+                    <p style="color: #000; margin: 5px 0; font-weight: bold;">
+                      ⭐ Rating: ${juego.rating}/10
+                    </p>
+                    <p style="color: #000; margin: 5px 0; font-weight: bold;">
+                      💰 ${juego.precio === 0 ? 'GRATIS' : '$' + juego.precio}
+                    </p>
+                    <p style="color: rgba(0,0,0,0.7); font-size: 0.85rem; margin: 5px 0;">
+                      🎮 ${juego.plataforma}
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `).join('')}
+        </div>
+      `;
+      
+      container.innerHTML = html;
+    }
+
+    // Renderizar todas las categorías
+    function renderizarTodasLasCategorias(mejoresJuegos) {
+      const container = document.getElementById('mejores-juegos-container');
+      
+      let html = `
+        <div style="background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%); border: 2px solid #3a86ff; border-radius: 15px; padding: 20px;">
+          <h5 style="color: #3a86ff; text-shadow: 0 0 10px #3a86ff; margin-bottom: 20px;">
+            📊 TODOS LOS MEJORES JUEGOS
+          </h5>
+      `;
+
+      const categoriasIcons = {
+        'accion': '🔥',
+        'aventura': '🗺️',
+        'rpg': '⚔️',
+        'deportes': '⚽',
+        'estrategia': '🧠',
+        'puzzle': '🧩',
+        'horror': '👻',
+        'shooter': '🎯'
+      };
+
+      Object.entries(mejoresJuegos).forEach(([categoria, juegos]) => {
+        html += `
+          <div style="margin-bottom: 30px;">
+            <h6 style="color: #00ff88; padding: 15px; background: rgba(0,255,136,0.1); border-left: 4px solid #00ff88; margin-bottom: 15px; border-radius: 5px;">
+              ${categoriasIcons[categoria] || '🎮'} ${categoria.toUpperCase()} (${juegos.length} juegos)
+            </h6>
+            <div style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 15px;">
+        `;
+
+        juegos.slice(0, 3).forEach(juego => {
+          html += `
+            <div style="background: rgba(255,255,255,0.05); border: 1px solid #00ff88; padding: 12px; border-radius: 10px;">
+              <p style="color: #00ff88; font-weight: bold; margin-bottom: 8px;">${juego.nombre}</p>
+              <p style="color: rgba(255,255,255,0.7); font-size: 0.85rem; margin-bottom: 8px;">${juego.descripcion.substring(0, 60)}...</p>
+              <div style="display: flex; justify-content: space-between; align-items: center; font-size: 0.85rem;">
+                <span style="color: #ff006e; font-weight: bold;">⭐ ${juego.rating}</span>
+                <span style="color: #3a86ff; font-weight: bold;">${juego.precio === 0 ? 'GRATIS' : '$' + juego.precio}</span>
+              </div>
+            </div>
+          `;
+        });
+
+        html += '</div></div>';
+      });
+
+      html += '</div>';
+      container.innerHTML = html;
+    }
+
+    // ============ CRUD AMIGOS ============
+
+    // LEER - Obtener todos los amigos
+    function cargarAmigos() {
+      fetch('/api/amigos')
+        .then(response => response.json())
+        .then(data => {
+          amigos = data.amigos || [];
+          renderizarTablaAmigos();
+        })
+        .catch(error => console.error('Error cargando amigos:', error));
+    }
+
+    // RENDERIZAR - Mostrar tabla de amigos
+    function renderizarTablaAmigos() {
+      const tabla = document.getElementById('tabla_amigos');
+      
+      if (amigos.length === 0) {
+        tabla.innerHTML = `
+          <tr>
+            <td colspan="7">
+              <div class="empty-state">
+                <div class="empty-state-icon">👥</div>
+                <p style="color: rgba(255,255,255,0.5);">No hay amigos registrados. ¡Añade el primero!</p>
+              </div>
+            </td>
+          </tr>
+        `;
+        return;
+      }
+
+      tabla.innerHTML = amigos.map(amigo => {
+        const estadoColor = amigo.estado === 'conectado' ? '#00ff88' : (amigo.estado === 'ausente' ? '#ffcc00' : (amigo.estado === 'inactivo' ? '#8b4789' : '#ff4444'));
+        const estadoTexto = amigo.estado === 'conectado' ? '🟢 Conectado' : (amigo.estado === 'ausente' ? '🟡 Ausente' : (amigo.estado === 'inactivo' ? '⚫ Inactivo' : '🔴 Desconectado'));
+        
+        return `
+          <tr>
+            <td><span class="neon-badge" style="background: linear-gradient(45deg, #ff006e, #8338ec);">#${amigo.id}</span></td>
+            <td style="color: #ff006e; font-weight: bold;">${amigo.nombre}</td>
+            <td style="color: #fff;">${amigo.email || '—'}</td>
+            <td><span class="genre-tag" style="border-color: #ff006e; color: #ff006e;">${amigo.plataforma || '—'}</span></td>
+            <td style="color: ${estadoColor}; font-weight: bold;">${estadoTexto}</td>
+            <td style="color: rgba(255,255,255,0.6); font-size: 0.85rem;">${amigo.ultimo_acceso || 'Nunca'}</td>
+            <td style="display: flex; gap: 4px; flex-wrap: wrap;">
+              <button class="btn-neon btn-neon-green" style="padding: 6px 8px; font-size: 0.65rem; margin: 1px;" title="Conectado" onclick="cambiarEstadoAmigo(${amigo.id}, 'conectado')">🟢</button>
+              <button class="btn-neon" style="padding: 6px 8px; font-size: 0.65rem; margin: 1px; background: #ffcc00; color: #000;" title="Ausente" onclick="cambiarEstadoAmigo(${amigo.id}, 'ausente')">🟡</button>
+              <button class="btn-neon btn-neon-red" style="padding: 6px 8px; font-size: 0.65rem; margin: 1px;" title="Desconectado" onclick="cambiarEstadoAmigo(${amigo.id}, 'desconectado')">🔴</button>
+              <button class="btn-neon" style="padding: 6px 8px; font-size: 0.65rem; margin: 1px; background: #8b4789; color: #fff;" title="Inactivo" onclick="cambiarEstadoAmigo(${amigo.id}, 'inactivo')">⚫</button>
+              <button class="btn-neon btn-neon-red" style="padding: 6px 8px; font-size: 0.65rem; margin: 1px;" onclick="eliminarAmigo(${amigo.id})">🗑️</button>
+            </td>
+          </tr>
+        `;
+      }).join('');
+    }
+
+    // CAMBIAR ESTADO del amigo
+    function cambiarEstadoAmigo(id, nuevoEstado) {
+      fetch('/api/amigos/' + id + '/estado', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ estado: nuevoEstado })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.ok) {
+          cargarAmigos();
+        } else {
+          alert('Error: ' + data.error);
+        }
+      })
+      .catch(error => console.error('Error:', error));
+    }
+
+    // ELIMINAR amigo
+    function eliminarAmigo(id) {
+      if (confirm('¿Estás seguro de que quieres eliminar este amigo?')) {
+        fetch('/api/amigos/' + id, { method: 'DELETE' })
+          .then(response => response.json())
+          .then(data => {
+            if (data.ok) {
+              alert('Amigo eliminado');
+              cargarAmigos();
+            } else {
+              alert('Error: ' + data.error);
+            }
+          })
+          .catch(error => console.error('Error:', error));
+      }
+    }
+  </script>
 {% endblock %}

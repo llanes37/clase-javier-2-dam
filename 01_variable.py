@@ -76,7 +76,6 @@ def seccion_1():
     # Salida: "Usuario <usuario> de <ciudad> | Puntos: <puntos> | Activo: <activo>"
     # --- ZONA DEL ALUMNO -----------------------------------------------------------------
 
-
 # =========================================================================================
 #  SECCI脫N 2 路 ENTRADA SEGURA (input) + mini-c谩lculos
 # =========================================================================================
@@ -124,6 +123,18 @@ def seccion_3():
     # 1) Lista 'tareas' con 3 tareas (str). A帽ade 1 y muestra total, primera y 煤ltima.
     # 2) Diccionario 'contacto' con: nombre, telefono, email. Actualiza telefono y a帽ade 'ciudad'.
     # --- ZONA DEL ALUMNO -----------------------------------------------------------------
+    tareas = ["Estudiar Python", "Hacer ejercicios", "Repasar apuntes"]
+    tareas.append("Preparar examen")
+    print(f"Tareas ({len(tareas)}) -> Primera: {tareas[0]} | 趌tima: {tareas[-1]}")
+
+    contacto = {
+        "nombre": "Javier",
+        "telefono": "600111222",
+        "email": "javier@email.com",
+    }
+    contacto["telefono"] = "699888777"
+    contacto["ciudad"] = "Madrid"
+    print(f"Contacto -> {contacto}")
 
 
 # =========================================================================================
@@ -151,6 +162,23 @@ def seccion_4():
     # - 3 comparaciones (>, <, ==) y una combinaci贸n l贸gica (ej: a>0 and b>0)
     # --- ZONA DEL ALUMNO -----------------------------------------------------------------
 
+    a = safe_input("Primer n鷐ero: ", float, default=10)
+    b = safe_input("Segundo n鷐ero: ", float, default=3)
+
+    print("Operaciones:")
+    print(f"{a} + {b} = {a + b}")
+    print(f"{a} - {b} = {a - b}")
+    print(f"{a} * {b} = {a * b}")
+    print(f"{a} / {b} = {a / b}" if b != 0 else "Divisi髇: no se puede dividir entre 0")
+    print(f"{a} // {b} = {a // b}" if b != 0 else "Divisi髇 entera: no se puede dividir entre 0")
+    print(f"{a} % {b} = {a % b}" if b != 0 else "M骴ulo: no se puede dividir entre 0")
+    print(f"{a} ** {b} = {a ** b}")
+
+    print("Comparaciones:")
+    print(f"{a} > {b} -> {a > b}")
+    print(f"{a} < {b} -> {a < b}")
+    print(f"{a} == {b} -> {a == b}")
+    print(f"(a > 0 and b > 0) -> {a > 0 and b > 0}")
 
 # =========================================================================================
 #  SECCI脫N 5 路 LABORATORIO IA (Variables creativas)

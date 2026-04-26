@@ -7,6 +7,7 @@ class BaseConfig:
     JSON_AS_ASCII = False
     TEMPLATES_AUTO_RELOAD = True
     ECHO_LOGS = True
+    MAX_CONTENT_LENGTH = 2 * 1024 * 1024
 
 
 class DevConfig(BaseConfig):

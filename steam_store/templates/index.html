@@ -1,0 +1,309 @@
+{% extends 'base.html' %}
+
+{% block title %}Inicio{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    
+    <!-- ===== CARRUSEL DE JUEGOS DESTACADOS ===== -->
+    <section class="featured-carousel mb-5">
+        <div id="featuredCarousel" class="carousel slide" data-bs-ride="carousel">
+            <div class="carousel-indicators">
+                {% for juego in destacados[:5] %}
+                <button type="button" data-bs-target="#featuredCarousel" data-bs-slide-to="{{ loop.index0 }}" 
+                        class="{{ 'active' if loop.first }}"></button>
+                {% endfor %}
+            </div>
+            
+            <div class="carousel-inner">
+                {% for juego in destacados[:5] %}
+                <div class="carousel-item {{ 'active' if loop.first }}">
+                    <a href="{{ url_for('detalle_juego', id=juego.id) }}">
+                        <img src="{{ juego.imagen }}" alt="{{ juego.nombre }}">
+                        <div class="carousel-caption-steam">
+                            <h3>{{ juego.nombre }}</h3>
+                            <p class="mb-2">{{ juego.descripcion_corta }}</p>
+                            <div class="d-flex align-items-center gap-3">
+                                {% if juego.descuento > 0 %}
+                                <span class="discount-badge">-{{ juego.descuento }}%</span>
+                                <span class="price-original">{{ juego.precio_original }}€</span>
+                                {% endif %}
+                                <span class="price-final fs-4">
+                                    {% if juego.precio == 0 %}Gratis{% else %}{{ juego.precio }}€{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                {% endfor %}
+            </div>
+            
+            <button class="carousel-control-prev" type="button" data-bs-target="#featuredCarousel" data-bs-slide="prev">
+                <span class="carousel-control-prev-icon"></span>
+            </button>
+            <button class="carousel-control-next" type="button" data-bs-target="#featuredCarousel" data-bs-slide="next">
+                <span class="carousel-control-next-icon"></span>
+            </button>
+        </div>
+    </section>
+    
+    <div class="row">
+        <!-- ===== COLUMNA PRINCIPAL ===== -->
+        <div class="col-lg-9">
+            
+            <!-- ===== OFERTAS ESPECIALES ===== -->
+            <section class="mb-5">
+                <div class="section-title">
+                    <i class="bi bi-lightning-fill"></i>
+                    Ofertas Especiales
+                    <a href="{{ url_for('tienda', ofertas='true') }}" class="btn btn-steam-outline btn-sm ms-auto">
+                        Ver todas
+                    </a>
+                </div>
+                
+                <div class="row g-3">
+                    {% for juego in ofertas[:6] %}
+                    <div class="col-md-4 col-sm-6">
+                        <div class="game-card">
+                            <a href="{{ url_for('detalle_juego', id=juego.id) }}" class="text-decoration-none">
+                                <div class="game-card-img">
+                                    <img src="{{ juego.imagen }}" alt="{{ juego.nombre }}">
+                                </div>
+                                <div class="game-card-body">
+                                    <h5 class="game-card-title">{{ juego.nombre }}</h5>
+                                    <div class="game-card-tags">
+                                        {% for tag in juego.etiquetas[:2] %}
+                                        <span class="game-tag">{{ tag }}</span>
+                                        {% endfor %}
+                                    </div>
+                                    <div class="price-container">
+                                        <span class="discount-badge">-{{ juego.descuento }}%</span>
+                                        <span class="price-original">{{ juego.precio_original }}€</span>
+                                        <span class="price-final">{{ juego.precio }}€</span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            
+            <!-- ===== MEJOR VALORADOS ===== -->
+            <section class="mb-5">
+                <div class="section-title">
+                    <i class="bi bi-star-fill"></i>
+                    Mejor Valorados
+                </div>
+                
+                <div class="row g-3">
+                    {% for juego in mejor_valorados %}
+                    <div class="col-md-4 col-sm-6">
+                        <div class="game-card">
+                            <a href="{{ url_for('detalle_juego', id=juego.id) }}" class="text-decoration-none">
+                                <div class="game-card-img">
+                                    <img src="{{ juego.imagen }}" alt="{{ juego.nombre }}">
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        <span class="badge bg-warning text-dark">
+                                            <i class="bi bi-star-fill"></i> {{ juego.valoracion }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="game-card-body">
+                                    <h5 class="game-card-title">{{ juego.nombre }}</h5>
+                                    <div class="d-flex justify-content-between align-items-center">
+                                        <div class="rating-stars">
+                                            {% for i in range(5) %}
+                                                {% if i < juego.valoracion|int %}
+                                                <i class="bi bi-star-fill"></i>
+                                                {% else %}
+                                                <i class="bi bi-star"></i>
+                                                {% endif %}
+                                            {% endfor %}
+                                            <span class="rating-text">({{ juego.num_reviews|int }})</span>
+                                        </div>
+                                        <span class="price-final">
+                                            {% if juego.precio == 0 %}Gratis{% else %}{{ juego.precio }}€{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            
+            <!-- ===== NUEVOS LANZAMIENTOS ===== -->
+            <section class="mb-5">
+                <div class="section-title">
+                    <i class="bi bi-rocket-takeoff-fill"></i>
+                    Nuevos Lanzamientos
+                </div>
+                
+                <div class="row g-3">
+                    {% for juego in nuevos %}
+                    <div class="col-md-4 col-sm-6">
+                        <div class="game-card">
+                            <a href="{{ url_for('detalle_juego', id=juego.id) }}" class="text-decoration-none">
+                                <div class="game-card-img">
+                                    <img src="{{ juego.imagen }}" alt="{{ juego.nombre }}">
+                                    <div class="position-absolute top-0 start-0 m-2">
+                                        <span class="badge" style="background: var(--steam-accent);">
+                                            <i class="bi bi-calendar-event"></i> {{ juego.fecha_lanzamiento }}
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="game-card-body">
+                                    <h5 class="game-card-title">{{ juego.nombre }}</h5>
+                                    <p class="small text-muted mb-2">{{ juego.desarrollador }}</p>
+                                    <div class="price-container">
+                                        {% if juego.descuento > 0 %}
+                                        <span class="discount-badge">-{{ juego.descuento }}%</span>
+                                        <span class="price-original">{{ juego.precio_original }}€</span>
+                                        {% endif %}
+                                        <span class="price-final">
+                                            {% if juego.precio == 0 %}Gratis{% else %}{{ juego.precio }}€{% endif %}
+                                        </span>
+                                    </div>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            
+            <!-- ===== JUEGOS GRATIS ===== -->
+            {% if gratis %}
+            <section class="mb-5">
+                <div class="section-title">
+                    <i class="bi bi-gift-fill"></i>
+                    Juegos Gratis
+                    <a href="{{ url_for('tienda', gratis='true') }}" class="btn btn-steam-green btn-sm ms-auto">
+                        Ver todos
+                    </a>
+                </div>
+                
+                <div class="row g-3">
+                    {% for juego in gratis[:3] %}
+                    <div class="col-md-4">
+                        <div class="game-card" style="border-color: var(--steam-green-light);">
+                            <a href="{{ url_for('detalle_juego', id=juego.id) }}" class="text-decoration-none">
+                                <div class="game-card-img">
+                                    <img src="{{ juego.imagen }}" alt="{{ juego.nombre }}">
+                                    <div class="position-absolute top-0 end-0 m-2">
+                                        <span class="badge" style="background: var(--steam-green-light); color: #000;">
+                                            <i class="bi bi-gift"></i> GRATIS
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="game-card-body">
+                                    <h5 class="game-card-title">{{ juego.nombre }}</h5>
+                                    <p class="small text-muted mb-2">{{ juego.descripcion_corta }}</p>
+                                    <button class="btn btn-steam-green btn-sm w-100" onclick="event.preventDefault(); agregarAlCarrito({{ juego.id }})">
+                                        <i class="bi bi-download"></i> Obtener Gratis
+                                    </button>
+                                </div>
+                            </a>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </section>
+            {% endif %}
+            
+        </div>
+        
+        <!-- ===== SIDEBAR ===== -->
+        <div class="col-lg-3">
+            
+            <!-- Estadísticas de la tienda -->
+            <div class="filter-sidebar mb-4">
+                <h5 class="filter-title">
+                    <i class="bi bi-graph-up-arrow"></i> Estadísticas
+                </h5>
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total juegos:</span>
+                        <span class="fw-bold" style="color: var(--steam-accent);">{{ stats.total_juegos }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Juegos gratis:</span>
+                        <span class="fw-bold" style="color: var(--steam-green-light);">{{ stats.juegos_gratis }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">En oferta:</span>
+                        <span class="fw-bold" style="color: var(--steam-gold);">{{ stats.juegos_con_descuento }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Precio mínimo:</span>
+                        <span>{{ stats.precio_mas_bajo }}€</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Precio máximo:</span>
+                        <span>{{ stats.precio_mas_alto }}€</span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">Precio promedio:</span>
+                        <span>{{ stats.precio_promedio }}€</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Categorías -->
+            <div class="filter-sidebar mb-4">
+                <h5 class="filter-title">
+                    <i class="bi bi-tags"></i> Categorías
+                </h5>
+                <div class="list-group list-group-flush">
+                    {% for cat, desc in categorias.items() %}
+                    <a href="{{ url_for('tienda', categoria=cat) }}" 
+                       class="list-group-item list-group-item-action d-flex justify-content-between align-items-center"
+                       style="background: transparent; border-color: rgba(102,192,244,0.1); color: var(--steam-text);">
+                        {{ cat }}
+                        <i class="bi bi-chevron-right"></i>
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Mejor valorado -->
+            <div class="filter-sidebar mb-4">
+                <h5 class="filter-title">
+                    <i class="bi bi-trophy-fill"></i> Top #1
+                </h5>
+                <div class="text-center">
+                    <p class="mb-1 text-muted">Mejor valorado</p>
+                    <h5 style="color: var(--steam-gold);">{{ stats.mejor_valorado }}</h5>
+                    <p class="mb-1 text-muted mt-3">Más reseñas</p>
+                    <h5 style="color: var(--steam-accent);">{{ stats.mas_reseñas }}</h5>
+                </div>
+            </div>
+            
+            <!-- Quick links -->
+            <div class="filter-sidebar">
+                <h5 class="filter-title">
+                    <i class="bi bi-lightning"></i> Acceso Rápido
+                </h5>
+                <div class="d-grid gap-2">
+                    <a href="{{ url_for('tienda', ofertas='true') }}" class="btn btn-steam-outline btn-sm">
+                        <i class="bi bi-percent"></i> Ver Ofertas
+                    </a>
+                    <a href="{{ url_for('tienda', gratis='true') }}" class="btn btn-steam-green btn-sm">
+                        <i class="bi bi-gift"></i> Juegos Gratis
+                    </a>
+                    <a href="{{ url_for('tienda', orden='valoracion', direccion='desc') }}" class="btn btn-steam-outline btn-sm">
+                        <i class="bi bi-star"></i> Mejor Valorados
+                    </a>
+                    <a href="{{ url_for('tienda', orden='fecha', direccion='desc') }}" class="btn btn-steam-outline btn-sm">
+                        <i class="bi bi-calendar-plus"></i> Nuevos
+                    </a>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+    
+</div>
+{% endblock %}

@@ -63,10 +63,10 @@ class AlumnoServiceTest {
     @Test
     void borrar_fallaConMatriculaActiva() {
         Alumno alumno = new Alumno();
-        when(alumnoRepository.findById(10L)).thenReturn(Optional.of(alumno));
-        when(matriculaRepository.existsByAlumnoIdAndEstado(10L, EstadoMatricula.ACTIVA)).thenReturn(true);
+        when(alumnoRepository.findById(10)).thenReturn(Optional.of(alumno));
+        when(matriculaRepository.existsByAlumnoIdAndEstado(10, EstadoMatricula.ACTIVA)).thenReturn(true);
 
-        assertThrows(BusinessException.class, () -> alumnoService.borrar(10L));
+        assertThrows(BusinessException.class, () -> alumnoService.borrar(10));
         verify(alumnoRepository, never()).delete(any());
     }
 }

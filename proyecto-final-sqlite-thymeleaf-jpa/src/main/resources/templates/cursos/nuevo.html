@@ -1,49 +1,90 @@
 <!DOCTYPE html>
 <html lang="es" xmlns:th="http://www.thymeleaf.org">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nuevo curso</title>
-    <link rel="stylesheet" th:href="@{/css/app.css}">
-</head>
-<body>
+<head th:replace="~{fragments/head :: head('Nuevo curso')}"></head>
+<body class="bg-light">
+
 <div th:replace="~{fragments/nav :: topnav}"></div>
 
-<main class="shell page narrow">
-    <section class="page-header">
-        <h1>Nuevo curso</h1>
-        <a class="btn ghost" th:href="@{/cursos}">Volver</a>
-    </section>
+<main class="container-lg py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-6">
 
-    <!-- ? Error esperado: fecha fin anterior a inicio -->
-    <div class="alert error" th:if="${error}" th:text="${error}"></div>
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <h2 class="fw-bold mb-0"><i class="bi bi-plus-circle me-2 text-primary"></i>Nuevo curso</h2>
+                    <p class="text-muted small mb-0">Rellena los datos del nuevo curso</p>
+                </div>
+                <a class="btn btn-outline-secondary btn-sm fw-semibold" th:href="@{/cursos}">
+                    <i class="bi bi-arrow-left me-1"></i>Volver
+                </a>
+            </div>
 
-    <form class="form" th:action="@{/cursos}" th:object="${form}" method="post">
-        <!-- * El campo tipo consume el enum `CursoTipo` enviado por el controller -->
-        <label>Nombre</label>
-        <input type="text" th:field="*{nombre}" placeholder="Nombre del curso">
-        <p class="field-error" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></p>
+            <div class="alert alert-danger d-flex align-items-center gap-2 py-2" th:if="${error}" role="alert">
+                <i class="bi bi-exclamation-triangle-fill"></i><span th:text="${error}"></span>
+            </div>
 
-        <label>Tipo</label>
-        <select th:field="*{tipo}">
-            <option th:each="tipo : ${tipos}" th:value="${tipo}" th:text="${tipo}"></option>
-        </select>
-        <p class="field-error" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></p>
+            <div class="card border-0 shadow-sm">
+                <div class="card-body p-4">
+                    <form th:action="@{/cursos}" th:object="${form}" method="post">
 
-        <label>Fecha inicio</label>
-        <input type="date" th:field="*{fechaInicio}">
-        <p class="field-error" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Nombre</label>
+                            <input type="text" th:field="*{nombre}"
+                                   th:classappend="${#fields.hasErrors('nombre')} ? 'is-invalid'"
+                                   class="form-control" placeholder="Nombre del curso">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nombre')}" th:errors="*{nombre}"></div>
+                        </div>
 
-        <label>Fecha fin</label>
-        <input type="date" th:field="*{fechaFin}">
-        <p class="field-error" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}"></p>
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold">Tipo</label>
+                            <select th:field="*{tipo}"
+                                    th:classappend="${#fields.hasErrors('tipo')} ? 'is-invalid'"
+                                    class="form-select">
+                                <option th:each="tipo : ${tipos}" th:value="${tipo}" th:text="${tipo}"></option>
+                            </select>
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('tipo')}" th:errors="*{tipo}"></div>
+                        </div>
 
-        <label>Precio</label>
-        <input type="number" th:field="*{precio}" min="0" step="0.01" placeholder="0.00">
-        <p class="field-error" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></p>
+                        <div class="row g-3 mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Fecha inicio</label>
+                                <input type="date" th:field="*{fechaInicio}"
+                                       th:classappend="${#fields.hasErrors('fechaInicio')} ? 'is-invalid'"
+                                       class="form-control">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaInicio')}" th:errors="*{fechaInicio}"></div>
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-semibold">Fecha fin</label>
+                                <input type="date" th:field="*{fechaFin}"
+                                       th:classappend="${#fields.hasErrors('fechaFin')} ? 'is-invalid'"
+                                       class="form-control">
+                                <div class="invalid-feedback" th:if="${#fields.hasErrors('fechaFin')}" th:errors="*{fechaFin}"></div>
+                            </div>
+                        </div>
 
-        <button class="btn" type="submit">Guardar curso</button>
-    </form>
+                        <div class="mb-4">
+                            <label class="form-label fw-semibold">Precio (€)</label>
+                            <input type="number" th:field="*{precio}"
+                                   th:classappend="${#fields.hasErrors('precio')} ? 'is-invalid'"
+                                   class="form-control" min="0" step="0.01" placeholder="0.00">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('precio')}" th:errors="*{precio}"></div>
+                        </div>
+
+                        <div class="d-flex gap-2">
+                            <button class="btn btn-primary fw-semibold px-4" type="submit">
+                                <i class="bi bi-check-lg me-2"></i>Guardar curso
+                            </button>
+                            <a class="btn btn-outline-secondary fw-semibold" th:href="@{/cursos}">Cancelar</a>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
 </main>
+
+<div th:replace="~{fragments/scripts :: scripts}"></div>
 </body>
 </html>
+

@@ -1,0 +1,12 @@
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "type": "java",
+      "name": "Launch Application",
+      "request": "launch",
+      "mainClass": "com.curso.proyectofinal.Application",
+      "projectName": "proyecto-final"
+    }
+  ]
+}

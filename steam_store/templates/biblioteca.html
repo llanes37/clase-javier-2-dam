@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}Mi Biblioteca{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" style="color: var(--steam-accent);">Inicio</a></li>
+            <li class="breadcrumb-item active">Mi Biblioteca</li>
+        </ol>
+    </nav>
+    
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h2 style="color: var(--steam-text-light);">
+                <i class="bi bi-collection-fill" style="color: var(--steam-accent);"></i> Mi Biblioteca
+            </h2>
+            <p class="text-muted mb-0">{{ biblioteca|length }} juego{% if biblioteca|length != 1 %}s{% endif %} en tu colección</p>
+        </div>
+        
+        {% if biblioteca %}
+        <div class="d-flex gap-2">
+            <input type="text" class="form-control bg-dark text-light border-secondary" 
+                   placeholder="Buscar en biblioteca..." id="searchBiblioteca" style="width: 250px;">
+            <select class="form-select bg-dark text-light border-secondary" id="sortBiblioteca" style="width: 150px;">
+                <option value="nombre">Nombre</option>
+                <option value="fecha">Fecha compra</option>
+            </select>
+        </div>
+        {% endif %}
+    </div>
+    
+    {% if biblioteca %}
+    <div class="row g-3" id="bibliotecaGrid">
+        {% for juego in biblioteca %}
+        <div class="col-xl-2 col-lg-3 col-md-4 col-sm-6 biblioteca-item" data-nombre="{{ juego.nombre.lower() }}">
+            <div class="game-card h-100" style="border-color: var(--steam-green);">
+                <a href="{{ url_for('detalle_juego', id=juego.id) }}" class="text-decoration-none">
+                    <div class="game-card-img position-relative">
+                        <img src="{{ juego.imagen }}" alt="{{ juego.nombre }}">
+                        
+                        <!-- Badge "En biblioteca" -->
+                        <div class="position-absolute top-0 start-0 m-2">
+                            <span class="badge" style="background: var(--steam-green-light); color: #000;">
+                                <i class="bi bi-check-circle-fill"></i> Tuyo
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div class="game-card-body">
+                        <h6 class="game-card-title">{{ juego.nombre }}</h6>
+                        <p class="text-muted small mb-2">
+                            <i class="bi bi-calendar-check"></i> {{ juego.fecha_compra }}
+                        </p>
+                        <p class="mb-0 small">
+                            <i class="bi bi-clock" style="color: var(--steam-accent);"></i>
+                            {{ juego.tiempo_jugado }} horas jugadas
+                        </p>
+                    </div>
+                </a>
+                
+                <div class="game-card-body pt-0">
+                    <button class="btn btn-steam-green btn-sm w-100">
+                        <i class="bi bi-play-fill"></i> Jugar
+                    </button>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <!-- Estadísticas de biblioteca -->
+    <div class="row mt-5">
+        <div class="col-12">
+            <div style="background: var(--steam-card); border-radius: 4px; padding: 25px;">
+                <h5 style="color: var(--steam-text-light);" class="mb-4">
+                    <i class="bi bi-graph-up"></i> Estadísticas de tu Biblioteca
+                </h5>
+                
+                <div class="row text-center">
+                    <div class="col-md-3 col-6 mb-3">
+                        <div style="background: rgba(102,192,244,0.1); border-radius: 4px; padding: 20px;">
+                            <h2 style="color: var(--steam-accent);">{{ biblioteca|length }}</h2>
+                            <p class="text-muted mb-0">Juegos totales</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div style="background: rgba(164,208,7,0.1); border-radius: 4px; padding: 20px;">
+                            <h2 style="color: var(--steam-green-light);">0</h2>
+                            <p class="text-muted mb-0">Horas jugadas</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div style="background: rgba(255,215,0,0.1); border-radius: 4px; padding: 20px;">
+                            <h2 style="color: var(--steam-gold);">0</h2>
+                            <p class="text-muted mb-0">Logros</p>
+                        </div>
+                    </div>
+                    <div class="col-md-3 col-6 mb-3">
+                        <div style="background: rgba(231,76,60,0.1); border-radius: 4px; padding: 20px;">
+                            <h2 style="color: var(--steam-red);">{{ biblioteca|length }}</h2>
+                            <p class="text-muted mb-0">Sin jugar</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- Biblioteca vacía -->
+    <div class="text-center py-5" style="background: var(--steam-card); border-radius: 4px;">
+        <i class="bi bi-collection" style="font-size: 5rem; color: var(--steam-text-dark);"></i>
+        <h3 class="mt-4" style="color: var(--steam-text-light);">Tu biblioteca está vacía</h3>
+        <p class="text-muted mb-4">¡Es hora de comprar tu primer juego!</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('tienda') }}" class="btn btn-steam btn-lg">
+                <i class="bi bi-shop"></i> Explorar tienda
+            </a>
+            <a href="{{ url_for('tienda', ofertas='true') }}" class="btn btn-steam-green btn-lg">
+                <i class="bi bi-percent"></i> Ver ofertas
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Búsqueda en biblioteca
+    document.getElementById('searchBiblioteca')?.addEventListener('input', function() {
+        const query = this.value.toLowerCase();
+        document.querySelectorAll('.biblioteca-item').forEach(item => {
+            const nombre = item.dataset.nombre;
+            item.style.display = nombre.includes(query) ? '' : 'none';
+        });
+    });
+</script>
+{% endblock %}

@@ -70,26 +70,42 @@ public class CursoService {
         log.debug("Intentando crear curso '{}', rango [{} - {}]",
                 form.getNombre(), form.getFechaInicio(), form.getFechaFin());
 
-        // ! Regla temporal: la fecha de fin NUNCA puede ser anterior a la de inicio
-        if (form.getFechaFin().isBefore(form.getFechaInicio())) {
-            log.warn("Curso rechazado por fechas inválidas: inicio={}, fin={}",
-                    form.getFechaInicio(), form.getFechaFin());
-            throw new BusinessException("La fecha de fin no puede ser anterior a la fecha de inicio");
-        }
-
-        // * Construimos la entidad con datos limpios (trim en nombre por espacios
-        // accidentales)
         Curso curso = new Curso();
-        curso.setNombre(form.getNombre().trim());
-        curso.setTipo(form.getTipo());
-        curso.setFechaInicio(form.getFechaInicio());
-        curso.setFechaFin(form.getFechaFin());
-        curso.setPrecio(form.getPrecio());
+        aplicarFormulario(curso, form);
 
         Curso guardado = cursoRepository.save(curso);
         log.info("Curso creado → id={}, nombre='{}'", guardado.getId(), guardado.getNombre());
         return guardado;
     }
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // * 🔵 buscarPorId() → carga un curso para rellenar el formulario de edición
+        // ─────────────────────────────────────────────────────────────────────────
+
+        @Transactional(readOnly = true)
+        public Curso buscarPorId(Integer id) {
+        return cursoRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Curso no encontrado"));
+        }
+
+        // ─────────────────────────────────────────────────────────────────────────
+        // * 🔵 actualizar() → valida y guarda cambios sobre un curso existente
+        // ─────────────────────────────────────────────────────────────────────────
+
+        @Transactional
+        public Curso actualizar(Integer id, CursoForm form) {
+        Curso curso = cursoRepository.findById(id)
+            .orElseThrow(() -> new NotFoundException("Curso no encontrado"));
+
+        log.debug("Actualizando curso id={} con rango [{} - {}]",
+            id, form.getFechaInicio(), form.getFechaFin());
+
+        aplicarFormulario(curso, form);
+
+        Curso guardado = cursoRepository.save(curso);
+        log.info("Curso actualizado → id={}, nombre='{}'", guardado.getId(), guardado.getNombre());
+        return guardado;
+        }
 
     // ─────────────────────────────────────────────────────────────────────────
     // * 🔵 borrar() → elimina un curso con borrado protegido
@@ -100,7 +116,7 @@ public class CursoService {
     // ? La FK ON DELETE RESTRICT en BD también bloquea el borrado,
     // ? pero con un error SQL incomprensible. Aquí damos un mensaje claro.
     @Transactional
-    public void borrar(Long id) {
+    public void borrar(Integer id) {
         log.debug("Intentando borrar curso id={}", id);
 
         Curso curso = cursoRepository.findById(id)
@@ -117,5 +133,22 @@ public class CursoService {
 
         cursoRepository.delete(curso);
         log.info("Curso eliminado → id={}", id);
+    }
+
+    private void aplicarFormulario(Curso curso, CursoForm form) {
+        validarRangoFechas(form);
+        curso.setNombre(form.getNombre().trim());
+        curso.setTipo(form.getTipo());
+        curso.setFechaInicio(form.getFechaInicio());
+        curso.setFechaFin(form.getFechaFin());
+        curso.setPrecio(form.getPrecio());
+    }
+
+    private void validarRangoFechas(CursoForm form) {
+        if (form.getFechaFin().isBefore(form.getFechaInicio())) {
+            log.warn("Curso rechazado por fechas inválidas: inicio={}, fin={}",
+                    form.getFechaInicio(), form.getFechaFin());
+            throw new BusinessException("La fecha de fin no puede ser anterior a la fecha de inicio");
+        }
     }
 }

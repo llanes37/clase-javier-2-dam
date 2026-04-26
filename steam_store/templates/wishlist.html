@@ -1,0 +1,192 @@
+{% extends 'base.html' %}
+
+{% block title %}Lista de Deseos{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" style="color: var(--steam-accent);">Inicio</a></li>
+            <li class="breadcrumb-item active">Lista de Deseos</li>
+        </ol>
+    </nav>
+    
+    <h2 class="mb-4" style="color: var(--steam-text-light);">
+        <i class="bi bi-heart-fill" style="color: var(--steam-red);"></i> Tu Lista de Deseos
+        <span class="badge ms-2" style="background: var(--steam-accent); font-size: 0.9rem;">
+            {{ wishlist|length }}
+        </span>
+    </h2>
+    
+    {% if wishlist %}
+    <div class="row">
+        <div class="col-lg-8">
+            <div style="background: var(--steam-card); border-radius: 4px; overflow: hidden;">
+                
+                {% for item in wishlist %}
+                <div class="wishlist-item d-flex align-items-center p-3 {% if not loop.last %}border-bottom{% endif %}" 
+                     style="border-color: rgba(102,192,244,0.1) !important; transition: all 0.3s;"
+                     id="wishlistItem{{ item.id }}">
+                    
+                    <!-- Imagen -->
+                    <a href="{{ url_for('detalle_juego', id=item.id) }}" class="me-3">
+                        <img src="{{ item.imagen }}" alt="{{ item.nombre }}" 
+                             style="width: 180px; height: auto; border-radius: 4px;">
+                    </a>
+                    
+                    <!-- Info del juego -->
+                    <div class="flex-grow-1">
+                        <a href="{{ url_for('detalle_juego', id=item.id) }}" class="text-decoration-none">
+                            <h5 class="mb-2" style="color: var(--steam-text-light);">{{ item.nombre }}</h5>
+                        </a>
+                        <p class="text-muted mb-2 small">
+                            <i class="bi bi-calendar-plus"></i> Añadido el {{ item.fecha_agregado }}
+                        </p>
+                        
+                        <!-- Precio -->
+                        <div class="price-container">
+                            {% if item.descuento > 0 %}
+                            <span class="discount-badge">-{{ item.descuento }}%</span>
+                            <span class="price-original">{{ item.precio_original }}€</span>
+                            {% endif %}
+                            <span class="price-final fs-5">
+                                {% if item.precio == 0 %}Gratis{% else %}{{ item.precio }}€{% endif %}
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Botones de acción -->
+                    <div class="d-flex flex-column gap-2 ms-3">
+                        <button class="btn btn-steam-green btn-sm" onclick="agregarAlCarritoDesdeWishlist({{ item.id }})">
+                            <i class="bi bi-cart-plus"></i> Añadir al carrito
+                        </button>
+                        <button class="btn btn-outline-danger btn-sm" onclick="eliminarDeWishlist({{ item.id }})">
+                            <i class="bi bi-heart-fill"></i> Eliminar
+                        </button>
+                    </div>
+                </div>
+                {% endfor %}
+                
+            </div>
+            
+            <!-- Botones -->
+            <div class="mt-4 d-flex gap-3">
+                <a href="{{ url_for('tienda') }}" class="btn btn-steam-outline">
+                    <i class="bi bi-arrow-left"></i> Seguir explorando
+                </a>
+                <button class="btn btn-steam-green" onclick="agregarTodosAlCarrito()">
+                    <i class="bi bi-cart-plus"></i> Añadir todos al carrito
+                </button>
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-lg-4">
+            <div style="background: var(--steam-card); border-radius: 4px; padding: 25px; border: 1px solid rgba(102,192,244,0.2);">
+                <h5 style="color: var(--steam-text-light);" class="mb-4">
+                    <i class="bi bi-info-circle"></i> Resumen
+                </h5>
+                
+                <div class="mb-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Total juegos:</span>
+                        <span style="color: var(--steam-accent);">{{ wishlist|length }}</span>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span class="text-muted">Precio total:</span>
+                        <span style="color: var(--steam-green-light);">
+                            {{ wishlist|sum(attribute='precio')|round(2) }}€
+                        </span>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span class="text-muted">En oferta:</span>
+                        <span style="color: var(--steam-gold);">
+                            {{ wishlist|selectattr('descuento', 'gt', 0)|list|length }}
+                        </span>
+                    </div>
+                </div>
+                
+                <hr style="border-color: rgba(102,192,244,0.2);">
+                
+                <p class="text-muted small mb-0">
+                    <i class="bi bi-bell"></i> Te notificaremos cuando alguno de tus juegos esté en oferta.
+                </p>
+            </div>
+            
+            <!-- Ofertas de wishlist -->
+            {% set ofertas_wishlist = wishlist|selectattr('descuento', 'gt', 0)|list %}
+            {% if ofertas_wishlist %}
+            <div class="mt-4" style="background: rgba(164,208,7,0.1); border: 1px solid var(--steam-green-light); border-radius: 4px; padding: 20px;">
+                <h6 style="color: var(--steam-green-light);" class="mb-3">
+                    <i class="bi bi-lightning-fill"></i> ¡En oferta ahora!
+                </h6>
+                {% for item in ofertas_wishlist %}
+                <div class="d-flex justify-content-between align-items-center mb-2">
+                    <span style="color: var(--steam-text);">{{ item.nombre }}</span>
+                    <span class="discount-badge">-{{ item.descuento }}%</span>
+                </div>
+                {% endfor %}
+            </div>
+            {% endif %}
+        </div>
+    </div>
+    
+    {% else %}
+    <!-- Wishlist vacía -->
+    <div class="text-center py-5" style="background: var(--steam-card); border-radius: 4px;">
+        <i class="bi bi-heart" style="font-size: 5rem; color: var(--steam-text-dark);"></i>
+        <h3 class="mt-4" style="color: var(--steam-text-light);">Tu lista de deseos está vacía</h3>
+        <p class="text-muted mb-4">Guarda juegos que te interesen para comprarlos más tarde</p>
+        <div class="d-flex justify-content-center gap-3">
+            <a href="{{ url_for('tienda') }}" class="btn btn-steam btn-lg">
+                <i class="bi bi-shop"></i> Explorar tienda
+            </a>
+            <a href="{{ url_for('tienda', ofertas='true') }}" class="btn btn-steam-green btn-lg">
+                <i class="bi bi-percent"></i> Ver ofertas
+            </a>
+        </div>
+    </div>
+    {% endif %}
+    
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    async function agregarAlCarritoDesdeWishlist(id) {
+        await agregarAlCarrito(id);
+    }
+    
+    async function eliminarDeWishlist(id) {
+        try {
+            const response = await fetch(`/api/wishlist/eliminar/${id}`, {
+                method: 'DELETE'
+            });
+            const data = await response.json();
+            
+            if (data.success) {
+                showToast(data.message, 'success');
+                document.getElementById(`wishlistItem${id}`).remove();
+                
+                // Si no quedan items, recargar
+                if (document.querySelectorAll('.wishlist-item').length === 0) {
+                    location.reload();
+                }
+            }
+        } catch (error) {
+            showToast('Error al eliminar', 'error');
+        }
+    }
+    
+    async function agregarTodosAlCarrito() {
+        const items = document.querySelectorAll('.wishlist-item');
+        for (const item of items) {
+            const id = item.id.replace('wishlistItem', '');
+            await agregarAlCarrito(parseInt(id));
+        }
+        showToast('¡Todos los juegos añadidos al carrito!', 'success');
+    }
+</script>
+{% endblock %}

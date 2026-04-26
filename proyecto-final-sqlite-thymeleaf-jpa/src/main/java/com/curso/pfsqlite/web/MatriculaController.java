@@ -1,5 +1,6 @@
 package com.curso.pfsqlite.web;
 
+import com.curso.pfsqlite.domain.Matricula;
 import com.curso.pfsqlite.service.AlumnoService;
 import com.curso.pfsqlite.service.BusinessException;
 import com.curso.pfsqlite.service.CursoService;
@@ -146,7 +147,7 @@ public class MatriculaController {
     // ? En sistemas reales, el historial tiene valor (auditoría, estadísticas,
     // reclamaciones).
     @PostMapping("/{id}/anular")
-    public String anular(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String anular(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         try {
             matriculaService.anular(id);
             redirectAttributes.addFlashAttribute("ok", "Matrícula anulada correctamente");
@@ -163,7 +164,7 @@ public class MatriculaController {
     // ? Se usa POST (no DELETE) porque los formularios HTML estándar solo soportan
     // GET y POST.
     @PostMapping("/{id}/eliminar")
-    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String eliminar(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         try {
             matriculaService.borrar(id);
             redirectAttributes.addFlashAttribute("ok", "Matrícula eliminada correctamente");
@@ -174,16 +175,64 @@ public class MatriculaController {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    // * 🔵 GET /matriculas/{id}/editar → Muestra el formulario relleno
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @GetMapping("/{id}/editar")
+    public String editar(@PathVariable Integer id, Model model) {
+        Matricula matricula = matriculaService.buscarPorId(id);
+        MatriculaForm form = new MatriculaForm();
+        form.setAlumnoId(matricula.getAlumno().getId());
+        form.setCursoId(matricula.getCurso().getId());
+        form.setFechaMatricula(matricula.getFechaMatricula());
+        model.addAttribute("form", form);
+        model.addAttribute("matriculaId", id);
+        model.addAttribute("matriculaEstado", matricula.getEstado());
+        cargarListas(model);
+        return "matriculas/editar";
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // * 🔵 POST /matriculas/{id}/editar → Procesa y guarda cambios
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @PostMapping("/{id}/editar")
+    public String actualizar(
+            @PathVariable Integer id,
+            @Valid @ModelAttribute("form") MatriculaForm form,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("matriculaId", id);
+            cargarListas(model);
+            return "matriculas/editar";
+        }
+
+        try {
+            matriculaService.actualizar(id, form);
+            redirectAttributes.addFlashAttribute("ok", "Matrícula actualizada correctamente");
+            return "redirect:/matriculas";
+        } catch (BusinessException ex) {
+            model.addAttribute("matriculaId", id);
+            model.addAttribute("error", ex.getMessage());
+            cargarListas(model);
+            return "matriculas/editar";
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     // * 🔵 MÉTODO AUXILIAR PRIVADO: cargarListas()
     // ─────────────────────────────────────────────────────────────────────────
 
     // * 🧠 TEORÍA: Principio DRY → Don't Repeat Yourself
     // ? Este método centraliza la carga de alumnos y cursos para los combos del
     // formulario.
-    // ? Sin él, tendríamos el mismo código repetido en 3 sitios distintos:
+    // ? Sin él, tendríamos el mismo código repetido en varios sitios distintos:
     // ? - en nueva() al mostrar el formulario por primera vez
-    // ? - en crear() al volver por error de validación
-    // ? - en crear() al volver por error de regla de negocio
+    // ? - en crear() al volver por error de validación o de negocio
+    // ? - en editar()/actualizar() al recargar el formulario de modificación
     private void cargarListas(Model model) {
         model.addAttribute("alumnos", alumnoService.listar());
         model.addAttribute("cursos", cursoService.listar());

@@ -35,7 +35,7 @@ public class Matricula {
     // * Clave primaria generada automáticamente por SQLite
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    private Integer id;
 
     // * 🧠 TEORÍA: @ManyToOne → muchas matrículas pertenecen a UN alumno
     // ? optional=false le indica a Hibernate que NUNCA será null.
@@ -69,7 +69,7 @@ public class Matricula {
     // * 🔵 GETTERS Y SETTERS
     // ─────────────────────────────────────────────────────────────────────────
 
-    public Long getId() {
+    public Integer getId() {
         return id;
     }
 

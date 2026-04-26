@@ -76,6 +76,13 @@ def seccion_1():
     print("Este mensaje va debajo de una línea separadora.")
     linea()
 
+
+    def suma ():
+        a = 5
+        b = 3
+        print("Suma:", a + b)
+    suma()
+
     # TODO: (Tema: BANNER SENCILLO)
     # Crea una función banner() que imprima 3 líneas:
     #   "======"
@@ -102,10 +109,12 @@ def seccion_2():
     # * DEMO
     def saludar_a(nombre):
         print(f"Hola, {nombre} 👋")
+        saludar_a("Javier")
 
     def repetir(texto, veces):
         for _ in range(veces):
             print(texto)
+            repetir("Hola soy Javier", 4)
 
     nombre = safe_input("Tu nombre: ", str, default="Invitado")
     saludar_a(nombre)
@@ -139,10 +148,14 @@ def seccion_3():
 
     def suma(a, b):
         return a + b
+    
+    def resta(a, b):
+        return a - b
 
     n = safe_input("Número para elevar al cuadrado: ", int, default=4)
     print("Cuadrado:", cuadrado(n))
     print("Suma 2+3:", suma(2, 3))
+    print("Resta 5-2:", resta(5, 2))
 
     # TODO: (Tema: PRECIO CON IVA)
     # Escribe precio_con_iva(base, iva) que devuelva base * (1 + iva/100).
@@ -253,10 +266,14 @@ def seccion_6():
     # Implementa media(a, b, c) que devuelva la media de 3 números.
     # Úsala para imprimir un mensaje: "La media es X" con 2 decimales.
     # --- ZONA DEL ALUMNO -----------------------------------------------------------------
-    # def media(a, b, c):
-    #     ...
-    # m = media(5, 7, 9)
-    # print(f"La media es {m:.2f}")
+    def media(a, b, c):
+        return (a + b + c) / 3
+    
+    m = media(5, 7, 9)
+    print(f"La media es {m:.2f}")
+
+    print()
+    pause()
 
 # =========================================================================================
 #  SECCIÓN 7 · Laboratorio IA (funciones sencillas)

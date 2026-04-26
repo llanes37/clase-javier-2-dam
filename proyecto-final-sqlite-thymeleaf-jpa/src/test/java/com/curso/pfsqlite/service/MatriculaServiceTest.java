@@ -11,6 +11,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.test.util.ReflectionTestUtils;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -40,10 +41,12 @@ class MatriculaServiceTest {
     @BeforeEach
     void setUp() {
         alumno = new Alumno();
+        ReflectionTestUtils.setField(alumno, "id", 1);
         alumno.setNombre("Ana");
         alumno.setEmail("ana@mail.com");
 
         curso = new Curso();
+        ReflectionTestUtils.setField(curso, "id", 2);
         curso.setNombre("Java");
         curso.setTipo(CursoTipo.ONLINE);
         curso.setFechaInicio(LocalDate.of(2026, 3, 1));
@@ -51,12 +54,12 @@ class MatriculaServiceTest {
         curso.setPrecio(new BigDecimal("150.00"));
 
         form = new MatriculaForm();
-        form.setAlumnoId(1L);
-        form.setCursoId(2L);
+        form.setAlumnoId(1);
+        form.setCursoId(2);
         form.setFechaMatricula(LocalDate.of(2026, 3, 10));
 
-        when(alumnoRepository.findById(1L)).thenReturn(Optional.of(alumno));
-        when(cursoRepository.findById(2L)).thenReturn(Optional.of(curso));
+        lenient().when(alumnoRepository.findById(1)).thenReturn(Optional.of(alumno));
+        lenient().when(cursoRepository.findById(2)).thenReturn(Optional.of(curso));
     }
 
     @Test
@@ -69,7 +72,7 @@ class MatriculaServiceTest {
 
     @Test
     void crear_fallaSiDuplicadaActiva() {
-        when(matriculaRepository.existsByAlumnoIdAndCursoIdAndEstado(1L, 2L, EstadoMatricula.ACTIVA))
+        when(matriculaRepository.existsByAlumnoIdAndCursoIdAndEstado(1, 2, EstadoMatricula.ACTIVA))
                 .thenReturn(true);
 
         assertThrows(BusinessException.class, () -> matriculaService.crear(form));
@@ -78,7 +81,7 @@ class MatriculaServiceTest {
 
     @Test
     void crear_okConDatosValidos() {
-        when(matriculaRepository.existsByAlumnoIdAndCursoIdAndEstado(1L, 2L, EstadoMatricula.ACTIVA))
+        when(matriculaRepository.existsByAlumnoIdAndCursoIdAndEstado(1, 2, EstadoMatricula.ACTIVA))
                 .thenReturn(false);
         when(matriculaRepository.save(any(Matricula.class))).thenAnswer(inv -> inv.getArgument(0));
 
@@ -86,5 +89,63 @@ class MatriculaServiceTest {
 
         assertEquals(EstadoMatricula.ACTIVA, creada.getEstado());
         assertEquals(LocalDate.of(2026, 3, 10), creada.getFechaMatricula());
+    }
+
+    @Test
+    void actualizar_fallaSiNuevaRelacionDuplicadaActiva() {
+        Alumno otroAlumno = new Alumno();
+        ReflectionTestUtils.setField(otroAlumno, "id", 3);
+        otroAlumno.setNombre("Luis");
+        otroAlumno.setEmail("luis@mail.com");
+
+        Curso otroCurso = new Curso();
+        ReflectionTestUtils.setField(otroCurso, "id", 4);
+        otroCurso.setNombre("SQL");
+        otroCurso.setTipo(CursoTipo.PRESENCIAL);
+        otroCurso.setFechaInicio(LocalDate.of(2026, 3, 1));
+        otroCurso.setFechaFin(LocalDate.of(2026, 4, 1));
+        otroCurso.setPrecio(new BigDecimal("90.00"));
+
+        Matricula existente = new Matricula();
+        ReflectionTestUtils.setField(existente, "id", 9);
+        existente.setAlumno(alumno);
+        existente.setCurso(curso);
+        existente.setFechaMatricula(LocalDate.of(2026, 3, 10));
+        existente.setEstado(EstadoMatricula.ACTIVA);
+
+        form.setAlumnoId(3);
+        form.setCursoId(4);
+        form.setFechaMatricula(LocalDate.of(2026, 3, 15));
+
+        when(matriculaRepository.findDetalleById(9)).thenReturn(Optional.of(existente));
+        when(alumnoRepository.findById(3)).thenReturn(Optional.of(otroAlumno));
+        when(cursoRepository.findById(4)).thenReturn(Optional.of(otroCurso));
+        when(matriculaRepository.existsByAlumnoIdAndCursoIdAndEstado(3, 4, EstadoMatricula.ACTIVA))
+                .thenReturn(true);
+
+        assertThrows(BusinessException.class, () -> matriculaService.actualizar(9, form));
+        verify(matriculaRepository, never()).save(any());
+    }
+
+    @Test
+    void actualizar_okMantieneEstadoExistente() {
+        Matricula existente = new Matricula();
+        ReflectionTestUtils.setField(existente, "id", 10);
+        existente.setAlumno(alumno);
+        existente.setCurso(curso);
+        existente.setFechaMatricula(LocalDate.of(2026, 3, 8));
+        existente.setEstado(EstadoMatricula.ANULADA);
+
+        form.setFechaMatricula(LocalDate.of(2026, 3, 20));
+
+        when(matriculaRepository.findDetalleById(10)).thenReturn(Optional.of(existente));
+        when(matriculaRepository.save(any(Matricula.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        Matricula actualizada = matriculaService.actualizar(10, form);
+
+        assertEquals(EstadoMatricula.ANULADA, actualizada.getEstado());
+        assertEquals(LocalDate.of(2026, 3, 20), actualizada.getFechaMatricula());
+        assertEquals(1, actualizada.getAlumno().getId());
+        assertEquals(2, actualizada.getCurso().getId());
     }
 }

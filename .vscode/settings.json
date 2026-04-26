@@ -1,3 +1,13 @@
 {
-    "java.compile.nullAnalysis.mode": "automatic"
+    "java.compile.nullAnalysis.mode": "automatic",
+    "sqltools.connections": [
+        {
+            "previewLimit": 50,
+            "driver": "SQLite",
+            "name": "app.db",
+            "group": "Proyecto",
+            "database": "${workspaceFolder:clase-javier-2-dam}/proyecto-final-sqlite-thymeleaf-jpa/data/app.db"
+        }
+    ],
+    "sqltools.useNodeRuntime": true
 }

@@ -1,12 +1,94 @@
 {% extends 'base.html' %}{% block content %}
-  <!-- ! Detalle de item -->
-  <div class="card shadow-sm">
+  <div class="row g-4">
+    <div class="col-lg-7">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          <h2 class="h4 mb-3">{{ item.nombre }}</h2>
+          <p class="text-muted mb-1">ID: {{ item.id }}</p>
+          <p class="mb-1">Precio: ${{ "%.2f"|format(item.precio) }}</p>
+          <p class="mb-3">Stock: {{ item.stock }}</p>
+          <div class="d-flex align-items-center gap-2 mb-3">
+            <span class="stars-display">
+              {% for i in range(1, 6) %}
+                <span class="{{ 'on' if i <= promedio_redondeado else 'off' }}">&#9733;</span>
+              {% endfor %}
+            </span>
+            <span class="text-muted">{{ promedio_estrellas }} / 5 ({{ total_resenas }} resenas)</span>
+          </div>
+          {% if session.get('user_id') %}
+            <form action="{{ url_for('web.carrito_add', item_id=item.id) }}" method="post" class="d-inline">
+              <button class="btn btn-dark" type="submit">Anadir al carrito</button>
+            </form>
+          {% else %}
+            <a href="{{ url_for('auth.login_view') }}" class="btn btn-dark">Inicia sesion para comprar</a>
+          {% endif %}
+          {% if can_manage %}
+            <a href="{{ url_for('web.home', editar=item.id) }}#form-item" class="btn btn-primary">Editar</a>
+          {% endif %}
+          <a href="{{ url_for('web.home') }}" class="btn btn-outline-secondary">Volver</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-lg-5">
+      <div class="card shadow-sm h-100">
+        <div class="card-body">
+          {% if can_manage %}
+            <h5 class="mb-3">Nueva resena</h5>
+            <form action="{{ url_for('web.crear_resena', item_id=item.id) }}" method="post" class="row gy-3">
+              <div class="col-12">
+                <label class="form-label">Nombre</label>
+                <input name="autor" class="form-control" required>
+              </div>
+              <div class="col-12">
+                <label class="form-label">Comentario</label>
+                <textarea name="comentario" class="form-control" rows="3" required></textarea>
+              </div>
+              <div class="col-12">
+                <label class="form-label d-block">Puntuacion</label>
+                <div class="rating-input" aria-label="Puntuacion por estrellas">
+                  <input id="s5" name="estrellas" type="radio" value="5" checked><label for="s5">&#9733;</label>
+                  <input id="s4" name="estrellas" type="radio" value="4"><label for="s4">&#9733;</label>
+                  <input id="s3" name="estrellas" type="radio" value="3"><label for="s3">&#9733;</label>
+                  <input id="s2" name="estrellas" type="radio" value="2"><label for="s2">&#9733;</label>
+                  <input id="s1" name="estrellas" type="radio" value="1"><label for="s1">&#9733;</label>
+                </div>
+              </div>
+              <div class="col-12">
+                <button class="btn btn-dark w-100" type="submit">Publicar resena</button>
+              </div>
+            </form>
+          {% else %}
+            <h5 class="mb-2">Modo lectura</h5>
+            <p class="text-muted mb-0">Tu rol solo permite consultar informacion del articulo.</p>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="card shadow-sm mt-4">
     <div class="card-body">
-      <h2 class="h4 mb-3">{{ item.nombre }}</h2>
-      <p class="text-muted mb-1">ID: {{ item.id }}</p>
-      <p class="mb-1">Precio: ${{ "%.2f"|format(item.precio) }}</p>
-      <p class="mb-3">Stock: {{ item.stock }}</p>
-      <a href="{{ url_for('web.home') }}" class="btn btn-outline-secondary">Volver</a>
+      <h5 class="mb-3">Resenas del producto</h5>
+      {% if item.resenas %}
+        <div class="vstack gap-3">
+          {% for resena in item.resenas|reverse %}
+            <div class="border rounded-3 p-3 bg-white">
+              <div class="d-flex justify-content-between align-items-center mb-2">
+                <strong>{{ resena.autor }}</strong>
+                <span class="stars-display">
+                  {% for i in range(1, 6) %}
+                    <span class="{{ 'on' if i <= resena.estrellas else 'off' }}">&#9733;</span>
+                  {% endfor %}
+                </span>
+              </div>
+              <p class="mb-0 text-muted">{{ resena.comentario }}</p>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p class="text-muted mb-0">Aun no hay resenas para este producto.</p>
+      {% endif %}
     </div>
   </div>
 {% endblock %}

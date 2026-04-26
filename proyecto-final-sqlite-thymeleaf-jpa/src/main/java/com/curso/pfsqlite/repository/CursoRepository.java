@@ -14,12 +14,12 @@ import java.util.List;
  */
 
 // * 🧠 TEORÍA: Mismo patrón que AlumnoRepository → interfaz pura, Spring genera la implementación
-// ? JpaRepository<Curso, Long> → gestiona la entidad Curso cuya clave primaria es Long
+// ? JpaRepository<Curso, Integer> → gestiona la entidad Curso cuya clave primaria es Integer
 
 // TODO: añadir findAllByTipoOrderByIdAsc(CursoTipo tipo) para el ejercicio de filtrado por tipo
 // TODO: añadir findAllByFechaInicioAfter(LocalDate fecha) para listar cursos futuros
 
-public interface CursoRepository extends JpaRepository<Curso, Long> {
+public interface CursoRepository extends JpaRepository<Curso, Integer> {
 
     // * findAllByOrderByIdAsc → SELECT * FROM cursos ORDER BY id ASC
     // ? Orden estable en la UI aunque se borren registros intermedios

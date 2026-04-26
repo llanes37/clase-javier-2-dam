@@ -1,0 +1,436 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ juego.nombre }}{% endblock %}
+
+{% block content %}
+<div class="fade-in">
+    
+    <!-- Breadcrumb -->
+    <nav aria-label="breadcrumb" class="mb-4">
+        <ol class="breadcrumb">
+            <li class="breadcrumb-item"><a href="{{ url_for('index') }}" style="color: var(--steam-accent);">Inicio</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('tienda') }}" style="color: var(--steam-accent);">Tienda</a></li>
+            <li class="breadcrumb-item"><a href="{{ url_for('tienda', categoria=juego.categoria) }}" style="color: var(--steam-accent);">{{ juego.categoria }}</a></li>
+            <li class="breadcrumb-item active">{{ juego.nombre }}</li>
+        </ol>
+    </nav>
+    
+    <div class="row">
+        <!-- ===== COLUMNA PRINCIPAL ===== -->
+        <div class="col-lg-8">
+            
+            <!-- Header del juego -->
+            <div class="mb-4">
+                <h1 style="color: var(--steam-text-light); font-weight: 700;">{{ juego.nombre }}</h1>
+                <div class="d-flex flex-wrap gap-3 align-items-center">
+                    <span class="text-muted">
+                        <i class="bi bi-building"></i> {{ juego.desarrollador }}
+                    </span>
+                    <span class="text-muted">
+                        <i class="bi bi-calendar"></i> {{ juego.fecha_lanzamiento }}
+                    </span>
+                    <div class="platform-icons">
+                        {% if 'windows' in juego.plataformas %}<i class="bi bi-windows" title="Windows"></i>{% endif %}
+                        {% if 'playstation' in juego.plataformas %}<i class="bi bi-playstation" title="PlayStation"></i>{% endif %}
+                        {% if 'xbox' in juego.plataformas %}<i class="bi bi-xbox" title="Xbox"></i>{% endif %}
+                        {% if 'nintendo' in juego.plataformas %}<i class="bi bi-nintendo-switch" title="Nintendo Switch"></i>{% endif %}
+                        {% if 'macos' in juego.plataformas %}<i class="bi bi-apple" title="macOS"></i>{% endif %}
+                        {% if 'linux' in juego.plataformas %}<i class="bi bi-ubuntu" title="Linux"></i>{% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Imagen/Video principal -->
+            <div class="game-media mb-4" style="background: var(--steam-card); border-radius: 4px; overflow: hidden;">
+                <div class="ratio ratio-16x9">
+                    {% if juego.video %}
+                    <iframe src="{{ juego.video }}" title="{{ juego.nombre }}" allowfullscreen
+                            style="border: none;"></iframe>
+                    {% else %}
+                    <img src="{{ juego.imagen }}" alt="{{ juego.nombre }}" style="object-fit: cover;">
+                    {% endif %}
+                </div>
+            </div>
+            
+            <!-- Capturas de pantalla -->
+            {% if juego.capturas %}
+            <div class="mb-4">
+                <h5 style="color: var(--steam-text-light);">
+                    <i class="bi bi-images"></i> Capturas de Pantalla
+                </h5>
+                <div class="row g-2">
+                    {% for captura in juego.capturas %}
+                    <div class="col-6 col-md-4">
+                        <a href="{{ captura }}" target="_blank">
+                            <img src="{{ captura }}" alt="Captura {{ loop.index }}" 
+                                 class="img-fluid rounded" style="transition: transform 0.3s;">
+                        </a>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Descripción -->
+            <div class="mb-4" style="background: var(--steam-card); padding: 25px; border-radius: 4px;">
+                <h5 style="color: var(--steam-text-light);">
+                    <i class="bi bi-journal-text"></i> Acerca de este juego
+                </h5>
+                <p style="color: var(--steam-text); line-height: 1.8;">
+                    {{ juego.descripcion }}
+                </p>
+            </div>
+            
+            <!-- Etiquetas -->
+            <div class="mb-4">
+                <h5 style="color: var(--steam-text-light);">
+                    <i class="bi bi-tags"></i> Etiquetas populares
+                </h5>
+                <div class="d-flex flex-wrap gap-2">
+                    {% for tag in juego.etiquetas %}
+                    <a href="{{ url_for('tienda', q=tag) }}" class="game-tag text-decoration-none" 
+                       style="padding: 5px 12px; font-size: 0.85rem;">
+                        {{ tag }}
+                    </a>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Requisitos del sistema -->
+            <div class="mb-4" style="background: var(--steam-card); padding: 25px; border-radius: 4px;">
+                <h5 style="color: var(--steam-text-light);">
+                    <i class="bi bi-pc-display"></i> Requisitos del Sistema
+                </h5>
+                
+                <div class="row">
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">MÍNIMOS:</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <strong style="color: var(--steam-text-dark);">SO:</strong> 
+                                <span style="color: var(--steam-text);">{{ juego.requisitos_minimos.os }}</span>
+                            </li>
+                            <li class="mb-2">
+                                <strong style="color: var(--steam-text-dark);">Procesador:</strong> 
+                                <span style="color: var(--steam-text);">{{ juego.requisitos_minimos.cpu }}</span>
+                            </li>
+                            <li class="mb-2">
+                                <strong style="color: var(--steam-text-dark);">Memoria:</strong> 
+                                <span style="color: var(--steam-text);">{{ juego.requisitos_minimos.ram }}</span>
+                            </li>
+                            <li class="mb-2">
+                                <strong style="color: var(--steam-text-dark);">Gráficos:</strong> 
+                                <span style="color: var(--steam-text);">{{ juego.requisitos_minimos.gpu }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <h6 class="text-muted mb-3">RECOMENDADOS:</h6>
+                        <ul class="list-unstyled">
+                            <li class="mb-2">
+                                <strong style="color: var(--steam-text-dark);">SO:</strong> 
+                                <span style="color: var(--steam-text);">{{ juego.requisitos_recomendados.os }}</span>
+                            </li>
+                            <li class="mb-2">
+                                <strong style="color: var(--steam-text-dark);">Procesador:</strong> 
+                                <span style="color: var(--steam-text);">{{ juego.requisitos_recomendados.cpu }}</span>
+                            </li>
+                            <li class="mb-2">
+                                <strong style="color: var(--steam-text-dark);">Memoria:</strong> 
+                                <span style="color: var(--steam-text);">{{ juego.requisitos_recomendados.ram }}</span>
+                            </li>
+                            <li class="mb-2">
+                                <strong style="color: var(--steam-text-dark);">Gráficos:</strong> 
+                                <span style="color: var(--steam-text);">{{ juego.requisitos_recomendados.gpu }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Reviews -->
+            <div class="mb-4" style="background: var(--steam-card); padding: 25px; border-radius: 4px;">
+                <h5 style="color: var(--steam-text-light);">
+                    <i class="bi bi-chat-left-quote"></i> Reseñas de usuarios
+                </h5>
+                
+                <!-- Resumen de valoración -->
+                <div class="d-flex align-items-center gap-3 mb-4 p-3" 
+                     style="background: rgba(0,0,0,0.2); border-radius: 4px;">
+                    <div class="text-center">
+                        <h2 class="mb-0" style="color: var(--steam-gold);">{{ juego.valoracion }}</h2>
+                        <div class="rating-stars">
+                            {% for i in range(5) %}
+                                {% if i < juego.valoracion|int %}
+                                <i class="bi bi-star-fill"></i>
+                                {% else %}
+                                <i class="bi bi-star"></i>
+                                {% endif %}
+                            {% endfor %}
+                        </div>
+                    </div>
+                    <div>
+                        <p class="mb-1" style="color: var(--steam-text-light);">
+                            <strong>{{ juego.positivas }}%</strong> de las {{ "{:,}".format(juego.num_reviews) }} reseñas son positivas
+                        </p>
+                        <p class="mb-0 text-muted small">
+                            {% if juego.positivas >= 95 %}
+                                <span style="color: var(--steam-accent);">Extremadamente positivas</span>
+                            {% elif juego.positivas >= 85 %}
+                                <span style="color: var(--steam-green-light);">Muy positivas</span>
+                            {% elif juego.positivas >= 70 %}
+                                <span style="color: #a4d007;">Mayormente positivas</span>
+                            {% elif juego.positivas >= 50 %}
+                                <span style="color: var(--steam-gold);">Variadas</span>
+                            {% else %}
+                                <span style="color: var(--steam-red);">Mayormente negativas</span>
+                            {% endif %}
+                        </p>
+                    </div>
+                </div>
+                
+                <!-- Formulario para nueva review -->
+                <div class="mb-4 p-3" style="background: rgba(0,0,0,0.2); border-radius: 4px;">
+                    <h6 class="text-muted mb-3">Escribe tu reseña</h6>
+                    <form id="formReview">
+                        <input type="hidden" name="juego_id" value="{{ juego.id }}">
+                        <div class="mb-3">
+                            <input type="text" name="usuario" class="form-control bg-dark text-light border-secondary" 
+                                   placeholder="Tu nombre de usuario">
+                        </div>
+                        <div class="mb-3">
+                            <div class="d-flex gap-2 mb-2">
+                                <span class="text-muted">Valoración:</span>
+                                <div class="rating-input">
+                                    {% for i in range(5, 0, -1) %}
+                                    <input type="radio" name="valoracion" value="{{ i }}" id="star{{ i }}" {% if i == 5 %}checked{% endif %}>
+                                    <label for="star{{ i }}" style="color: var(--steam-gold); cursor: pointer;">
+                                        <i class="bi bi-star-fill"></i>
+                                    </label>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <textarea name="contenido" class="form-control bg-dark text-light border-secondary" 
+                                      rows="3" placeholder="¿Qué opinas de este juego?"></textarea>
+                        </div>
+                        <div class="d-flex gap-3 align-items-center">
+                            <div class="form-check">
+                                <input type="checkbox" name="recomendado" class="form-check-input" id="recomendado" checked>
+                                <label class="form-check-label text-muted" for="recomendado">
+                                    <i class="bi bi-hand-thumbs-up"></i> Lo recomiendo
+                                </label>
+                            </div>
+                            <button type="submit" class="btn btn-steam btn-sm">
+                                <i class="bi bi-send"></i> Publicar reseña
+                            </button>
+                        </div>
+                    </form>
+                </div>
+                
+                <!-- Lista de reviews -->
+                <div id="listaReviews">
+                    {% if reviews %}
+                        {% for review in reviews %}
+                        <div class="review-item mb-3 p-3" style="background: rgba(0,0,0,0.2); border-radius: 4px;">
+                            <div class="d-flex justify-content-between align-items-start mb-2">
+                                <div>
+                                    <strong style="color: var(--steam-accent);">{{ review.usuario }}</strong>
+                                    <span class="ms-2">
+                                        {% if review.recomendado %}
+                                        <i class="bi bi-hand-thumbs-up-fill text-success"></i>
+                                        {% else %}
+                                        <i class="bi bi-hand-thumbs-down-fill text-danger"></i>
+                                        {% endif %}
+                                    </span>
+                                </div>
+                                <span class="text-muted small">{{ review.fecha }}</span>
+                            </div>
+                            <div class="rating-stars mb-2">
+                                {% for i in range(5) %}
+                                    {% if i < review.valoracion %}
+                                    <i class="bi bi-star-fill"></i>
+                                    {% else %}
+                                    <i class="bi bi-star"></i>
+                                    {% endif %}
+                                {% endfor %}
+                            </div>
+                            <p class="mb-0" style="color: var(--steam-text);">{{ review.contenido }}</p>
+                        </div>
+                        {% endfor %}
+                    {% else %}
+                        <p class="text-muted text-center">
+                            <i class="bi bi-chat-dots"></i> Aún no hay reseñas. ¡Sé el primero en opinar!
+                        </p>
+                    {% endif %}
+                </div>
+            </div>
+            
+        </div>
+        
+        <!-- ===== SIDEBAR DE COMPRA ===== -->
+        <div class="col-lg-4">
+            <div class="sticky-top" style="top: 80px;">
+                
+                <!-- Card de compra -->
+                <div style="background: var(--steam-card); border-radius: 4px; overflow: hidden; border: 1px solid rgba(102,192,244,0.2);">
+                    <!-- Imagen header -->
+                    <img src="{{ juego.imagen }}" alt="{{ juego.nombre }}" class="w-100">
+                    
+                    <div class="p-4">
+                        <p class="text-muted small mb-3">{{ juego.descripcion_corta }}</p>
+                        
+                        <!-- Precio -->
+                        <div class="mb-4">
+                            {% if juego.descuento > 0 %}
+                            <div class="d-flex align-items-center gap-3 mb-2">
+                                <span class="discount-badge fs-5">-{{ juego.descuento }}%</span>
+                                <div>
+                                    <span class="price-original d-block">{{ juego.precio_original }}€</span>
+                                    <span class="price-final fs-3">{{ juego.precio }}€</span>
+                                </div>
+                            </div>
+                            {% elif juego.precio == 0 %}
+                            <span class="price-free fs-2">GRATIS</span>
+                            {% else %}
+                            <span class="price-final fs-2">{{ juego.precio }}€</span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Botones de acción -->
+                        <div class="d-grid gap-2 mb-3">
+                            {% if en_biblioteca %}
+                            <button class="btn btn-steam-green btn-lg" disabled>
+                                <i class="bi bi-check-circle"></i> Ya en tu biblioteca
+                            </button>
+                            {% elif en_carrito %}
+                            <a href="{{ url_for('ver_carrito') }}" class="btn btn-steam btn-lg">
+                                <i class="bi bi-cart-check"></i> Ver en carrito
+                            </a>
+                            {% else %}
+                            <button class="btn btn-steam-green btn-lg" onclick="agregarAlCarrito({{ juego.id }})">
+                                <i class="bi bi-cart-plus"></i> 
+                                {% if juego.precio == 0 %}Obtener gratis{% else %}Añadir al carrito{% endif %}
+                            </button>
+                            {% endif %}
+                            
+                            <button class="btn btn-steam-outline {{ 'active' if en_wishlist }}" 
+                                    onclick="agregarAWishlist({{ juego.id }})">
+                                <i class="bi bi-heart{{ '-fill' if en_wishlist }}"></i> 
+                                {% if en_wishlist %}En lista de deseos{% else %}Añadir a lista de deseos{% endif %}
+                            </button>
+                        </div>
+                        
+                        <!-- Info adicional -->
+                        <div class="border-top pt-3" style="border-color: rgba(102,192,244,0.2) !important;">
+                            <div class="row g-2 small">
+                                <div class="col-6 text-muted">Desarrollador:</div>
+                                <div class="col-6" style="color: var(--steam-accent);">{{ juego.desarrollador }}</div>
+                                
+                                <div class="col-6 text-muted">Editor:</div>
+                                <div class="col-6" style="color: var(--steam-accent);">{{ juego.editor }}</div>
+                                
+                                <div class="col-6 text-muted">Lanzamiento:</div>
+                                <div class="col-6">{{ juego.fecha_lanzamiento }}</div>
+                                
+                                <div class="col-6 text-muted">Categoría:</div>
+                                <div class="col-6">
+                                    <a href="{{ url_for('tienda', categoria=juego.categoria) }}" 
+                                       style="color: var(--steam-accent);">{{ juego.categoria }}</a>
+                                </div>
+                                
+                                {% if juego.multijugador %}
+                                <div class="col-6 text-muted">Multijugador:</div>
+                                <div class="col-6"><i class="bi bi-check-circle text-success"></i> Sí</div>
+                                {% endif %}
+                                
+                                <div class="col-6 text-muted">Logros:</div>
+                                <div class="col-6">
+                                    <i class="bi bi-trophy" style="color: var(--steam-gold);"></i> {{ juego.logros }}
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Idiomas -->
+                        <div class="border-top pt-3 mt-3" style="border-color: rgba(102,192,244,0.2) !important;">
+                            <h6 class="text-muted mb-2 small">IDIOMAS</h6>
+                            <div class="d-flex flex-wrap gap-1">
+                                {% for idioma in juego.idiomas %}
+                                <span class="badge" style="background: rgba(102,192,244,0.1); color: var(--steam-text);">
+                                    {{ idioma }}
+                                </span>
+                                {% endfor %}
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Juegos similares -->
+                {% if similares %}
+                <div class="mt-4" style="background: var(--steam-card); border-radius: 4px; padding: 20px;">
+                    <h6 style="color: var(--steam-text-light);" class="mb-3">
+                        <i class="bi bi-collection"></i> Juegos similares
+                    </h6>
+                    
+                    {% for sim in similares %}
+                    <a href="{{ url_for('detalle_juego', id=sim.id) }}" class="text-decoration-none d-block mb-3">
+                        <div class="d-flex gap-3 align-items-center p-2 rounded" 
+                             style="background: rgba(0,0,0,0.2); transition: all 0.3s;">
+                            <img src="{{ sim.imagen }}" alt="{{ sim.nombre }}" 
+                                 style="width: 80px; height: auto; border-radius: 4px;">
+                            <div class="flex-grow-1">
+                                <h6 class="mb-1" style="color: var(--steam-text-light); font-size: 0.9rem;">
+                                    {{ sim.nombre }}
+                                </h6>
+                                <span class="price-final" style="font-size: 0.85rem;">
+                                    {% if sim.precio == 0 %}Gratis{% else %}{{ sim.precio }}€{% endif %}
+                                </span>
+                            </div>
+                        </div>
+                    </a>
+                    {% endfor %}
+                </div>
+                {% endif %}
+                
+            </div>
+        </div>
+        
+    </div>
+    
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Manejar envío de review
+    document.getElementById('formReview').addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = new FormData(e.target);
+        const data = {
+            juego_id: parseInt(formData.get('juego_id')),
+            usuario: formData.get('usuario') || 'Usuario Anónimo',
+            valoracion: parseInt(formData.get('valoracion')),
+            contenido: formData.get('contenido'),
+            recomendado: formData.get('recomendado') === 'on'
+        };
+        
+        try {
+            const response = await fetch('/api/review', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(data)
+            });
+            const result = await response.json();
+            
+            if (result.success) {
+                showToast('¡Reseña publicada!', 'success');
+                location.reload();
+            }
+        } catch (error) {
+            showToast('Error al publicar reseña', 'error');
+        }
+    });
+</script>
+{% endblock %}

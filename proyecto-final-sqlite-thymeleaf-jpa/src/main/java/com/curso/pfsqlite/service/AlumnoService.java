@@ -129,7 +129,7 @@ public class AlumnoService {
     // ? La FK ON DELETE RESTRICT en BD también lo impide, pero su mensaje de error
     // ? es técnico e incomprensible. Aquí damos un mensaje claro al usuario.
     @Transactional
-    public void borrar(Long id) {
+    public void borrar(Integer id) {
         log.debug("Intentando borrar alumno id={}", id);
 
         // * orElseThrow: si findById devuelve empty(), lanzamos NotFoundException
@@ -148,6 +148,52 @@ public class AlumnoService {
 
         alumnoRepository.delete(alumno);
         log.info("Alumno eliminado → id={}", id);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // * 🔵 buscarPorId() → carga un alumno por su ID (para formulario de edición)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @Transactional(readOnly = true)
+    public Alumno buscarPorId(Integer id) {
+        return alumnoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Alumno no encontrado"));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // * 🔵 actualizar() → valida y actualiza los datos de un alumno existente
+    // ─────────────────────────────────────────────────────────────────────────
+
+    // * 🧠 TEORÍA: Diferencia clave con crear()
+    // ? Solo bloqueamos el email duplicado si el alumno CAMBIÓ de email.
+    // ? Si guarda el mismo email que ya tenía no debe lanzar error de duplicado.
+    @Transactional
+    public Alumno actualizar(Integer id, AlumnoForm form) {
+        Alumno alumno = alumnoRepository.findById(id)
+                .orElseThrow(() -> new NotFoundException("Alumno no encontrado"));
+
+        String emailNormalizado = normalizarEmail(form.getEmail());
+        log.debug("Actualizando alumno id={} con email={}", id, emailNormalizado);
+
+        if (!EMAIL_REGEX.matcher(emailNormalizado).matches()) {
+            log.warn("Email inválido al actualizar alumno id={}: {}", id, emailNormalizado);
+            throw new BusinessException("El email no tiene un formato válido");
+        }
+
+        // ! Solo comprobar unicidad si el email realmente ha cambiado
+        if (!emailNormalizado.equalsIgnoreCase(alumno.getEmail())
+                && alumnoRepository.existsByEmailIgnoreCase(emailNormalizado)) {
+            log.warn("Email duplicado al actualizar alumno id={}: {}", id, emailNormalizado);
+            throw new BusinessException("Ya existe un alumno con ese email");
+        }
+
+        alumno.setNombre(form.getNombre().trim());
+        alumno.setEmail(emailNormalizado);
+        alumno.setFechaNacimiento(form.getFechaNacimiento());
+
+        Alumno guardado = alumnoRepository.save(alumno);
+        log.info("Alumno actualizado → id={}, email={}", guardado.getId(), guardado.getEmail());
+        return guardado;
     }
 
     // ─────────────────────────────────────────────────────────────────────────

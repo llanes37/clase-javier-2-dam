@@ -1,0 +1,848 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Steam Store Clone{% endblock %} | Tienda de Videojuegos</title>
+    
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Bootstrap Icons -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Motiva+Sans:wght@400;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* =========================================================================================
+           🎮 STEAM STORE CLONE - Estilos CSS
+           ========================================================================================= */
+        
+        :root {
+            /* Colores Steam */
+            --steam-dark: #171a21;
+            --steam-darker: #0e1015;
+            --steam-blue: #1b2838;
+            --steam-blue-light: #2a475e;
+            --steam-accent: #66c0f4;
+            --steam-accent-dark: #417a9b;
+            --steam-green: #5c7e10;
+            --steam-green-light: #a4d007;
+            --steam-text: #c7d5e0;
+            --steam-text-light: #ffffff;
+            --steam-text-dark: #8f98a0;
+            --steam-card: #16202d;
+            --steam-hover: #1e3549;
+            --steam-gradient: linear-gradient(135deg, #1b2838 0%, #171a21 100%);
+            --steam-gold: #ffd700;
+            --steam-red: #e74c3c;
+            --steam-orange: #f39c12;
+        }
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Inter', 'Motiva Sans', Arial, sans-serif;
+            background: var(--steam-gradient);
+            color: var(--steam-text);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+        
+        /* ===== NAVBAR STEAM ===== */
+        .navbar-steam {
+            background: linear-gradient(to bottom, rgba(23, 26, 33, 0.95), rgba(27, 40, 56, 0.95));
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(102, 192, 244, 0.1);
+            padding: 0;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+        }
+        
+        .navbar-steam .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--steam-text-light) !important;
+            padding: 10px 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .navbar-steam .navbar-brand i {
+            font-size: 2rem;
+            color: var(--steam-accent);
+        }
+        
+        .navbar-steam .nav-link {
+            color: var(--steam-text) !important;
+            font-size: 0.9rem;
+            font-weight: 500;
+            padding: 15px 20px !important;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            transition: all 0.3s ease;
+            border-bottom: 3px solid transparent;
+        }
+        
+        .navbar-steam .nav-link:hover {
+            color: var(--steam-text-light) !important;
+            background: rgba(255, 255, 255, 0.05);
+            border-bottom-color: var(--steam-accent);
+        }
+        
+        .navbar-steam .nav-link.active {
+            color: var(--steam-accent) !important;
+            border-bottom-color: var(--steam-accent);
+        }
+        
+        /* Barra de búsqueda */
+        .search-container {
+            position: relative;
+        }
+        
+        .search-input {
+            background: rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(102, 192, 244, 0.2);
+            color: var(--steam-text-light);
+            padding: 8px 40px 8px 15px;
+            border-radius: 3px;
+            width: 250px;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            outline: none;
+            border-color: var(--steam-accent);
+            background: rgba(0, 0, 0, 0.5);
+            width: 300px;
+        }
+        
+        .search-input::placeholder {
+            color: var(--steam-text-dark);
+        }
+        
+        .search-btn {
+            position: absolute;
+            right: 5px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: none;
+            border: none;
+            color: var(--steam-accent);
+            cursor: pointer;
+            padding: 5px;
+        }
+        
+        /* Carrito badge */
+        .cart-badge {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background: var(--steam-green-light);
+            color: #000;
+            font-size: 0.7rem;
+            font-weight: 700;
+            padding: 2px 6px;
+            border-radius: 10px;
+            min-width: 18px;
+            text-align: center;
+        }
+        
+        /* ===== CONTENIDO PRINCIPAL ===== */
+        .main-content {
+            min-height: calc(100vh - 150px);
+            padding: 20px 0;
+        }
+        
+        /* ===== CARDS DE JUEGOS ===== */
+        .game-card {
+            background: var(--steam-card);
+            border-radius: 4px;
+            overflow: hidden;
+            transition: all 0.3s ease;
+            border: 1px solid rgba(102, 192, 244, 0.1);
+            height: 100%;
+        }
+        
+        .game-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+            border-color: var(--steam-accent);
+        }
+        
+        .game-card-img {
+            position: relative;
+            overflow: hidden;
+            aspect-ratio: 460/215;
+        }
+        
+        .game-card-img img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.3s ease;
+        }
+        
+        .game-card:hover .game-card-img img {
+            transform: scale(1.05);
+        }
+        
+        .game-card-body {
+            padding: 12px;
+        }
+        
+        .game-card-title {
+            color: var(--steam-text-light);
+            font-size: 0.95rem;
+            font-weight: 600;
+            margin-bottom: 8px;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+        }
+        
+        .game-card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 5px;
+            margin-bottom: 10px;
+        }
+        
+        .game-tag {
+            background: rgba(102, 192, 244, 0.1);
+            color: var(--steam-accent);
+            font-size: 0.7rem;
+            padding: 2px 8px;
+            border-radius: 2px;
+        }
+        
+        /* Precios */
+        .price-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .discount-badge {
+            background: var(--steam-green-light);
+            color: #1b2838;
+            font-weight: 700;
+            font-size: 0.85rem;
+            padding: 2px 6px;
+            border-radius: 2px;
+        }
+        
+        .price-original {
+            color: var(--steam-text-dark);
+            text-decoration: line-through;
+            font-size: 0.8rem;
+        }
+        
+        .price-final {
+            color: var(--steam-green-light);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        
+        .price-free {
+            color: var(--steam-green-light);
+            font-weight: 700;
+            font-size: 1rem;
+        }
+        
+        /* ===== BOTONES STEAM ===== */
+        .btn-steam {
+            background: linear-gradient(to right, #47bfff 5%, #1a44c2 60%);
+            background-position: 25%;
+            background-size: 400%;
+            border: none;
+            color: #fff;
+            font-weight: 500;
+            padding: 10px 20px;
+            border-radius: 3px;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            font-size: 0.85rem;
+            letter-spacing: 0.5px;
+        }
+        
+        .btn-steam:hover {
+            background-position: 0%;
+            color: #fff;
+        }
+        
+        .btn-steam-green {
+            background: linear-gradient(to right, var(--steam-green-light), var(--steam-green));
+        }
+        
+        .btn-steam-outline {
+            background: transparent;
+            border: 1px solid var(--steam-accent);
+            color: var(--steam-accent);
+        }
+        
+        .btn-steam-outline:hover {
+            background: var(--steam-accent);
+            color: var(--steam-dark);
+        }
+        
+        .btn-wishlist {
+            background: transparent;
+            border: 1px solid var(--steam-text-dark);
+            color: var(--steam-text-dark);
+            padding: 8px;
+            font-size: 1.1rem;
+        }
+        
+        .btn-wishlist:hover, .btn-wishlist.active {
+            border-color: var(--steam-gold);
+            color: var(--steam-gold);
+        }
+        
+        /* ===== SECCIONES ===== */
+        .section-title {
+            color: var(--steam-text-light);
+            font-size: 1.4rem;
+            font-weight: 600;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid rgba(102, 192, 244, 0.2);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .section-title i {
+            color: var(--steam-accent);
+        }
+        
+        /* ===== CARRUSEL DESTACADOS ===== */
+        .featured-carousel {
+            background: var(--steam-blue);
+            border-radius: 4px;
+            overflow: hidden;
+            margin-bottom: 30px;
+        }
+        
+        .carousel-item {
+            position: relative;
+        }
+        
+        .carousel-item img {
+            width: 100%;
+            height: 450px;
+            object-fit: cover;
+        }
+        
+        .carousel-caption-steam {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: linear-gradient(transparent, rgba(0,0,0,0.9));
+            padding: 80px 30px 30px;
+        }
+        
+        .carousel-caption-steam h3 {
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 10px;
+        }
+        
+        /* ===== SIDEBAR FILTROS ===== */
+        .filter-sidebar {
+            background: var(--steam-card);
+            border-radius: 4px;
+            padding: 20px;
+            border: 1px solid rgba(102, 192, 244, 0.1);
+        }
+        
+        .filter-title {
+            color: var(--steam-text-light);
+            font-size: 1rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .filter-group {
+            margin-bottom: 20px;
+        }
+        
+        .filter-option {
+            display: flex;
+            align-items: center;
+            padding: 8px 0;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+        
+        .filter-option:hover {
+            color: var(--steam-accent);
+        }
+        
+        .filter-option input {
+            margin-right: 10px;
+            accent-color: var(--steam-accent);
+        }
+        
+        /* ===== FOOTER ===== */
+        .footer-steam {
+            background: var(--steam-darker);
+            border-top: 1px solid rgba(102, 192, 244, 0.1);
+            padding: 40px 0 20px;
+            margin-top: 40px;
+        }
+        
+        .footer-logo {
+            font-size: 1.8rem;
+            font-weight: 700;
+            color: var(--steam-text-light);
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        
+        .footer-logo i {
+            color: var(--steam-accent);
+        }
+        
+        .footer-links h5 {
+            color: var(--steam-text-light);
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+            text-transform: uppercase;
+        }
+        
+        .footer-links a {
+            color: var(--steam-text-dark);
+            text-decoration: none;
+            font-size: 0.85rem;
+            display: block;
+            padding: 5px 0;
+            transition: color 0.2s ease;
+        }
+        
+        .footer-links a:hover {
+            color: var(--steam-accent);
+        }
+        
+        .footer-bottom {
+            border-top: 1px solid rgba(102, 192, 244, 0.1);
+            margin-top: 30px;
+            padding-top: 20px;
+            text-align: center;
+            color: var(--steam-text-dark);
+            font-size: 0.8rem;
+        }
+        
+        /* ===== VALORACIÓN ESTRELLAS ===== */
+        .rating-stars {
+            color: var(--steam-gold);
+            font-size: 0.9rem;
+        }
+        
+        .rating-text {
+            color: var(--steam-text-dark);
+            font-size: 0.8rem;
+            margin-left: 5px;
+        }
+        
+        /* ===== PLATAFORMAS ===== */
+        .platform-icons {
+            display: flex;
+            gap: 8px;
+            color: var(--steam-text-dark);
+            font-size: 1.1rem;
+        }
+        
+        .platform-icons i {
+            transition: color 0.2s ease;
+        }
+        
+        .platform-icons i:hover {
+            color: var(--steam-accent);
+        }
+        
+        /* ===== ALERTAS ===== */
+        .alert-steam {
+            background: var(--steam-card);
+            border: 1px solid var(--steam-accent);
+            color: var(--steam-text-light);
+            border-radius: 4px;
+        }
+        
+        .alert-steam.success {
+            border-color: var(--steam-green-light);
+        }
+        
+        .alert-steam.error {
+            border-color: var(--steam-red);
+        }
+        
+        /* ===== TOAST NOTIFICACIONES ===== */
+        .toast-container {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            z-index: 9999;
+        }
+        
+        .toast-steam {
+            background: var(--steam-card);
+            border: 1px solid var(--steam-green-light);
+            color: var(--steam-text-light);
+            border-radius: 4px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.5);
+        }
+        
+        /* ===== LOADING SPINNER ===== */
+        .loading-steam {
+            display: inline-block;
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(102, 192, 244, 0.2);
+            border-radius: 50%;
+            border-top-color: var(--steam-accent);
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+        
+        /* ===== SCROLLBAR PERSONALIZADO ===== */
+        ::-webkit-scrollbar {
+            width: 10px;
+        }
+        
+        ::-webkit-scrollbar-track {
+            background: var(--steam-dark);
+        }
+        
+        ::-webkit-scrollbar-thumb {
+            background: var(--steam-blue-light);
+            border-radius: 5px;
+        }
+        
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--steam-accent);
+        }
+        
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .search-input {
+                width: 150px;
+            }
+            
+            .search-input:focus {
+                width: 200px;
+            }
+            
+            .carousel-item img {
+                height: 250px;
+            }
+            
+            .carousel-caption-steam h3 {
+                font-size: 1.3rem;
+            }
+        }
+        
+        /* ===== ANIMACIONES ===== */
+        .fade-in {
+            animation: fadeIn 0.5s ease;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        /* Custom Styles */
+        {% block extra_css %}{% endblock %}
+    </style>
+</head>
+<body>
+    <!-- ===== NAVBAR ===== -->
+    <nav class="navbar navbar-expand-lg navbar-steam">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">
+                <i class="bi bi-controller"></i>
+                STEAM STORE
+            </a>
+            
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto">
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'index' }}" href="{{ url_for('index') }}">
+                            <i class="bi bi-house-fill"></i> Inicio
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'tienda' }}" href="{{ url_for('tienda') }}">
+                            <i class="bi bi-shop"></i> Tienda
+                        </a>
+                    </li>
+                    <li class="nav-item dropdown">
+                        <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
+                            <i class="bi bi-tags-fill"></i> Categorías
+                        </a>
+                        <ul class="dropdown-menu dropdown-menu-dark">
+                            {% for cat, desc in categorias.items() %}
+                            <li>
+                                <a class="dropdown-item" href="{{ url_for('tienda', categoria=cat) }}">
+                                    {{ cat }}
+                                </a>
+                            </li>
+                            {% endfor %}
+                        </ul>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'biblioteca' }}" href="{{ url_for('biblioteca') }}">
+                            <i class="bi bi-collection-fill"></i> Biblioteca
+                        </a>
+                    </li>
+                </ul>
+                
+                <!-- Barra de búsqueda -->
+                <form class="d-flex search-container me-3" action="{{ url_for('tienda') }}" method="GET">
+                    <input class="search-input" type="search" name="q" placeholder="Buscar juegos..." 
+                           value="{{ request.args.get('q', '') }}">
+                    <button class="search-btn" type="submit">
+                        <i class="bi bi-search"></i>
+                    </button>
+                </form>
+                
+                <!-- Iconos derecha -->
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'ver_wishlist' }}" href="{{ url_for('ver_wishlist') }}" title="Lista de deseos">
+                            <i class="bi bi-heart-fill"></i>
+                        </a>
+                    </li>
+                    <li class="nav-item position-relative">
+                        <a class="nav-link {{ 'active' if request.endpoint == 'ver_carrito' }}" href="{{ url_for('ver_carrito') }}" title="Carrito">
+                            <i class="bi bi-cart-fill"></i>
+                            {% if carrito_count > 0 %}
+                            <span class="cart-badge" id="cartBadge">{{ carrito_count }}</span>
+                            {% endif %}
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#" title="Mi cuenta">
+                            <i class="bi bi-person-circle"></i>
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- ===== CONTENIDO PRINCIPAL ===== -->
+    <main class="main-content">
+        <div class="container-fluid px-4">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+    
+    <!-- ===== FOOTER ===== -->
+    <footer class="footer-steam">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <div class="footer-logo">
+                        <i class="bi bi-controller"></i>
+                        STEAM STORE
+                    </div>
+                    <p class="text-muted">
+                        Tu tienda de videojuegos favorita. Proyecto didáctico basado en 
+                        listas, diccionarios y ordenación con Python Flask.
+                    </p>
+                </div>
+                <div class="col-md-2 footer-links">
+                    <h5>Tienda</h5>
+                    <a href="{{ url_for('index') }}">Inicio</a>
+                    <a href="{{ url_for('tienda') }}">Catálogo</a>
+                    <a href="{{ url_for('tienda', ofertas='true') }}">Ofertas</a>
+                    <a href="{{ url_for('tienda', gratis='true') }}">Gratis</a>
+                </div>
+                <div class="col-md-2 footer-links">
+                    <h5>Cuenta</h5>
+                    <a href="{{ url_for('biblioteca') }}">Biblioteca</a>
+                    <a href="{{ url_for('ver_wishlist') }}">Lista de deseos</a>
+                    <a href="{{ url_for('ver_carrito') }}">Carrito</a>
+                </div>
+                <div class="col-md-2 footer-links">
+                    <h5>Categorías</h5>
+                    <a href="{{ url_for('tienda', categoria='RPG') }}">RPG</a>
+                    <a href="{{ url_for('tienda', categoria='Acción') }}">Acción</a>
+                    <a href="{{ url_for('tienda', categoria='FPS') }}">FPS</a>
+                    <a href="{{ url_for('tienda', categoria='Indie') }}">Indie</a>
+                </div>
+                <div class="col-md-2 footer-links">
+                    <h5>Recursos</h5>
+                    <a href="#">Soporte</a>
+                    <a href="#">FAQ</a>
+                    <a href="#">Términos</a>
+                    <a href="#">Privacidad</a>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>
+                    © 2024 Steam Store Clone - Proyecto Didáctico Python Flask | 
+                    Autor: Joaquín | 
+                    <a href="https://clasesonlinejoaquin.es/" target="_blank" style="color: var(--steam-accent);">
+                        clasesonlinejoaquin.es
+                    </a>
+                </p>
+            </div>
+        </div>
+    </footer>
+    
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+    
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    
+    <script>
+        // ===== FUNCIONES GLOBALES =====
+        
+        // Mostrar notificación toast
+        function showToast(message, type = 'success') {
+            const container = document.getElementById('toastContainer');
+            const toast = document.createElement('div');
+            toast.className = `toast toast-steam show`;
+            toast.innerHTML = `
+                <div class="toast-header" style="background: var(--steam-blue); color: var(--steam-text-light); border: none;">
+                    <i class="bi ${type === 'success' ? 'bi-check-circle text-success' : 'bi-exclamation-circle text-danger'} me-2"></i>
+                    <strong class="me-auto">${type === 'success' ? 'Éxito' : 'Error'}</strong>
+                    <button type="button" class="btn-close btn-close-white" onclick="this.parentElement.parentElement.remove()"></button>
+                </div>
+                <div class="toast-body" style="background: var(--steam-card);">
+                    ${message}
+                </div>
+            `;
+            container.appendChild(toast);
+            
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 300);
+            }, 3000);
+        }
+        
+        // Agregar al carrito
+        async function agregarAlCarrito(id) {
+            try {
+                const response = await fetch('/api/carrito/agregar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    actualizarBadgeCarrito(data.carrito_count);
+                } else {
+                    showToast(data.error, 'error');
+                }
+            } catch (error) {
+                showToast('Error al agregar al carrito', 'error');
+            }
+        }
+        
+        // Agregar a wishlist
+        async function agregarAWishlist(id) {
+            try {
+                const response = await fetch('/api/wishlist/agregar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ id: id })
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(data.message, 'success');
+                } else {
+                    showToast(data.error, 'error');
+                }
+            } catch (error) {
+                showToast('Error al agregar a lista de deseos', 'error');
+            }
+        }
+        
+        // Actualizar badge del carrito
+        function actualizarBadgeCarrito(count) {
+            let badge = document.getElementById('cartBadge');
+            const cartLink = document.querySelector('a[href*="carrito"]');
+            
+            if (count > 0) {
+                if (!badge && cartLink) {
+                    badge = document.createElement('span');
+                    badge.id = 'cartBadge';
+                    badge.className = 'cart-badge';
+                    cartLink.appendChild(badge);
+                }
+                if (badge) badge.textContent = count;
+            } else {
+                if (badge) badge.remove();
+            }
+        }
+        
+        // Eliminar del carrito
+        async function eliminarDelCarrito(id) {
+            try {
+                const response = await fetch(`/api/carrito/eliminar/${id}`, {
+                    method: 'DELETE'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    location.reload();
+                }
+            } catch (error) {
+                showToast('Error al eliminar del carrito', 'error');
+            }
+        }
+        
+        // Procesar compra
+        async function procesarCompra() {
+            if (!confirm('¿Confirmar compra?')) return;
+            
+            try {
+                const response = await fetch('/api/carrito/comprar', {
+                    method: 'POST'
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast(data.message, 'success');
+                    setTimeout(() => {
+                        window.location.href = '/biblioteca';
+                    }, 1500);
+                } else {
+                    showToast(data.error, 'error');
+                }
+            } catch (error) {
+                showToast('Error al procesar la compra', 'error');
+            }
+        }
+    </script>
+    
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

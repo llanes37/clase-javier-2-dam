@@ -1,5 +1,6 @@
 package com.curso.pfsqlite.web;
 
+import com.curso.pfsqlite.domain.Alumno;
 import com.curso.pfsqlite.service.AlumnoService;
 import com.curso.pfsqlite.service.BusinessException;
 import com.curso.pfsqlite.web.form.AlumnoForm;
@@ -121,7 +122,7 @@ public class AlumnoController {
     // ? Si hay matrículas ACTIVAS, el service lanza BusinessException y el alumno
     // NO se borra.
     @PostMapping("/{id}/eliminar")
-    public String eliminar(@PathVariable Long id, RedirectAttributes redirectAttributes) {
+    public String eliminar(@PathVariable Integer id, RedirectAttributes redirectAttributes) {
         try {
             alumnoService.borrar(id);
             redirectAttributes.addFlashAttribute("ok", "Alumno eliminado correctamente");
@@ -129,5 +130,49 @@ public class AlumnoController {
             redirectAttributes.addFlashAttribute("error", ex.getMessage());
         }
         return "redirect:/alumnos";
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // * 🔵 GET /alumnos/{id}/editar → Muestra el formulario de edición relleno
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @GetMapping("/{id}/editar")
+    public String editar(@PathVariable Integer id, Model model) {
+        Alumno alumno = alumnoService.buscarPorId(id);
+        AlumnoForm form = new AlumnoForm();
+        form.setNombre(alumno.getNombre());
+        form.setEmail(alumno.getEmail());
+        form.setFechaNacimiento(alumno.getFechaNacimiento());
+        model.addAttribute("form", form);
+        model.addAttribute("alumnoId", id);
+        return "alumnos/editar";
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    // * 🔵 POST /alumnos/{id}/editar → Procesa y guarda los cambios del alumno
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @PostMapping("/{id}/editar")
+    public String actualizar(
+            @PathVariable Integer id,
+            @Valid @ModelAttribute("form") AlumnoForm form,
+            BindingResult bindingResult,
+            Model model,
+            RedirectAttributes redirectAttributes) {
+
+        if (bindingResult.hasErrors()) {
+            model.addAttribute("alumnoId", id);
+            return "alumnos/editar";
+        }
+
+        try {
+            alumnoService.actualizar(id, form);
+            redirectAttributes.addFlashAttribute("ok", "Alumno actualizado correctamente");
+            return "redirect:/alumnos";
+        } catch (BusinessException ex) {
+            model.addAttribute("error", ex.getMessage());
+            model.addAttribute("alumnoId", id);
+            return "alumnos/editar";
+        }
     }
 }

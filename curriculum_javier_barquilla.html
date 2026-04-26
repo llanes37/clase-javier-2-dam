@@ -1,0 +1,423 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>CV — Javier Barquilla Toboso</title>
+  <style>
+    /* ── Reset & Base ── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Segoe UI', Arial, sans-serif;
+      font-size: 13px;
+      color: #222;
+      background: #f0f2f5;
+      padding: 30px 20px;
+    }
+
+    a { color: inherit; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
+    /* ── Page wrapper ── */
+    .page {
+      max-width: 800px;
+      margin: 0 auto;
+      background: #fff;
+      box-shadow: 0 4px 24px rgba(0,0,0,.12);
+      border-radius: 6px;
+      overflow: hidden;
+    }
+
+    /* ── Header ── */
+    header {
+      background: #1a2e4a;
+      color: #fff;
+      padding: 32px 36px 28px;
+      display: flex;
+      align-items: flex-start;
+      gap: 28px;
+    }
+
+    .avatar {
+      width: 84px;
+      height: 84px;
+      border-radius: 50%;
+      background: #2e4f7a;
+      border: 3px solid rgba(255,255,255,.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 32px;
+      font-weight: 700;
+      flex-shrink: 0;
+      color: #c8d8f0;
+    }
+
+    .header-text h1 {
+      font-size: 24px;
+      font-weight: 700;
+      letter-spacing: .3px;
+    }
+
+    .header-text .title {
+      font-size: 13px;
+      color: #7fa8d4;
+      margin-top: 4px;
+      font-weight: 500;
+      letter-spacing: .5px;
+      text-transform: uppercase;
+    }
+
+    .contact-grid {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px 24px;
+      margin-top: 14px;
+    }
+
+    .contact-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #c8d8f0;
+    }
+
+    .contact-item .icon {
+      font-size: 14px;
+    }
+
+    /* ── Body layout ── */
+    .body {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: #f5f7fb;
+      padding: 28px 20px;
+      border-right: 1px solid #e5e9f0;
+    }
+
+    .sidebar-section { margin-bottom: 26px; }
+
+    .sidebar-section h3 {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #1a2e4a;
+      border-bottom: 2px solid #1a2e4a;
+      padding-bottom: 4px;
+      margin-bottom: 12px;
+    }
+
+    /* Skills */
+    .skill-group { margin-bottom: 12px; }
+    .skill-group .label {
+      font-size: 11px;
+      font-weight: 600;
+      color: #444;
+      margin-bottom: 4px;
+    }
+
+    .tag-list { display: flex; flex-wrap: wrap; gap: 4px; }
+
+    .tag {
+      background: #dce7f5;
+      color: #1a2e4a;
+      border-radius: 3px;
+      padding: 2px 7px;
+      font-size: 11px;
+      font-weight: 500;
+    }
+
+    .tag.green {
+      background: #d4edda;
+      color: #155724;
+    }
+
+    /* Languages */
+    .lang-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 6px;
+    }
+
+    .lang-item .lang-name { font-size: 12px; font-weight: 600; }
+
+    .lang-item .lang-level {
+      font-size: 10px;
+      background: #1a2e4a;
+      color: #fff;
+      border-radius: 10px;
+      padding: 1px 8px;
+    }
+
+    /* ── Main content ── */
+    .main {
+      padding: 28px 28px 28px 24px;
+    }
+
+    .section { margin-bottom: 24px; }
+
+    .section h2 {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 1.2px;
+      text-transform: uppercase;
+      color: #1a2e4a;
+      border-bottom: 2px solid #1a2e4a;
+      padding-bottom: 4px;
+      margin-bottom: 14px;
+    }
+
+    /* Summary */
+    .summary {
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: #333;
+    }
+
+    /* Entry (education / experience) */
+    .entry { margin-bottom: 14px; }
+    .entry:last-child { margin-bottom: 0; }
+
+    .entry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 8px;
+    }
+
+    .entry-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: #1a2e4a;
+    }
+
+    .entry-date {
+      font-size: 11px;
+      color: #6b7a99;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .entry-sub {
+      font-size: 12px;
+      color: #4a6080;
+      margin-top: 2px;
+      font-style: italic;
+    }
+
+    .entry-badge {
+      display: inline-block;
+      background: #e8f0fe;
+      color: #2e4f7a;
+      font-size: 10px;
+      font-weight: 600;
+      border-radius: 3px;
+      padding: 1px 6px;
+      margin-left: 6px;
+      vertical-align: middle;
+    }
+
+    .entry ul {
+      margin-top: 6px;
+      padding-left: 16px;
+    }
+
+    .entry ul li {
+      font-size: 12px;
+      line-height: 1.6;
+      color: #333;
+    }
+
+    /* Divider */
+    .entry + .entry {
+      border-top: 1px dashed #e0e5f0;
+      padding-top: 14px;
+    }
+
+    /* ── Print styles ── */
+    @media print {
+      body { background: #fff; padding: 0; }
+      .page { box-shadow: none; border-radius: 0; max-width: 100%; }
+    }
+  </style>
+</head>
+<body>
+
+<div class="page">
+
+  <!-- HEADER -->
+  <header>
+    <div class="avatar">JB</div>
+    <div class="header-text">
+      <h1>Javier Barquilla Toboso</h1>
+      <div class="title">Desarrollador de Software · Junior</div>
+      <div class="contact-grid">
+        <span class="contact-item"><span class="icon">📞</span> 630 65 69 62</span>
+        <span class="contact-item"><span class="icon">📧</span> <a href="mailto:javibarquillatoboso@gmail.com">javibarquillatoboso@gmail.com</a></span>
+        <span class="contact-item"><span class="icon">📍</span> Getafe, Madrid</span>
+        <span class="contact-item"><span class="icon">🔗</span> <a href="https://www.linkedin.com/in/javier-barquilla-toboso/" target="_blank">linkedin.com/in/javier-barquilla-toboso</a></span>
+      </div>
+    </div>
+  </header>
+
+  <div class="body">
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+
+      <div class="sidebar-section">
+        <h3>Backend</h3>
+        <div class="tag-list">
+          <span class="tag">Python</span>
+          <span class="tag">Flask</span>
+          <span class="tag">Java</span>
+          <span class="tag">Spring Boot</span>
+          <span class="tag">JPA</span>
+          <span class="tag">JDBC</span>
+          <span class="tag">SQL</span>
+          <span class="tag">SQLite</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Frontend</h3>
+        <div class="tag-list">
+          <span class="tag">HTML5</span>
+          <span class="tag">CSS3</span>
+          <span class="tag">JavaScript</span>
+          <span class="tag">Bootstrap</span>
+          <span class="tag">Thymeleaf</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Móvil &amp; Herramientas</h3>
+        <div class="tag-list">
+          <span class="tag">Android Studio</span>
+          <span class="tag">Jetpack Compose</span>
+          <span class="tag">Git</span>
+          <span class="tag">Maven</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>IA aplicada</h3>
+        <div class="tag-list">
+          <span class="tag green">GitHub Copilot</span>
+          <span class="tag green">Codex</span>
+        </div>
+        <p style="font-size:11px;color:#555;margin-top:6px;">Uso de agentes de IA para asistencia en desarrollo (nivel medio)</p>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>CMS &amp; eCommerce</h3>
+        <div class="tag-list">
+          <span class="tag">Shopify</span>
+          <span class="tag">Liquid</span>
+          <span class="tag">WordPress</span>
+        </div>
+      </div>
+
+      <div class="sidebar-section">
+        <h3>Idiomas</h3>
+        <div class="lang-item">
+          <span class="lang-name">Español</span>
+          <span class="lang-level">Nativo</span>
+        </div>
+        <div class="lang-item">
+          <span class="lang-name">Inglés</span>
+          <span class="lang-level">B1</span>
+        </div>
+      </div>
+
+    </aside>
+
+    <!-- MAIN -->
+    <main class="main">
+
+      <!-- RESUMEN -->
+      <div class="section">
+        <h2>Perfil Profesional</h2>
+        <p class="summary">
+          Desarrollador junior con Técnico Superior en Desarrollo de Aplicaciones Web (DAW) y actualmente cursando
+          Desarrollo de Aplicaciones Multiplataforma (DAM). Experiencia práctica en desarrollo backend con
+          Python/Flask y Java/Spring Boot, así como en gestión de tiendas Shopify y sitios WordPress.
+          Habituado al uso de herramientas de IA en el flujo de trabajo. Busco mi primera experiencia
+          profesional para seguir creciendo como desarrollador.
+        </p>
+      </div>
+
+      <!-- EXPERIENCIA -->
+      <div class="section">
+        <h2>Experiencia</h2>
+
+        <div class="entry">
+          <div class="entry-header">
+            <span class="entry-title">Desarrollador Web — Prácticas FCT <span class="entry-badge">FCT · DAW</span></span>
+            <span class="entry-date">Mar 2025 – Jun 2025</span>
+          </div>
+          <div class="entry-sub">Performance Time S.L. · Getafe, Madrid</div>
+          <ul>
+            <li>Desarrollo y personalización de tiendas Shopify mediante código Liquid y edición de plantillas.</li>
+            <li>Gestión del apartado visual y de contenido en plataformas Shopify y WordPress.</li>
+            <li>Mantenimiento y actualización de sitios web corporativos.</li>
+          </ul>
+        </div>
+
+      </div>
+
+      <!-- FORMACIÓN -->
+      <div class="section">
+        <h2>Formación</h2>
+
+        <div class="entry">
+          <div class="entry-header">
+            <span class="entry-title">CFGS Desarrollo de Aplicaciones Multiplataforma (DAM) <span class="entry-badge">En curso</span></span>
+            <span class="entry-date">Sep 2025 – Jun 2026</span>
+          </div>
+          <div class="entry-sub">I.E.S. Matemático Puig Adam · Getafe, Madrid</div>
+          <ul>
+            <li>2.º curso (1.º convalidado por DAW). Especialización en desarrollo Android y aplicaciones multiplataforma.</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="entry-header">
+            <span class="entry-title">CFGS Desarrollo de Aplicaciones Web (DAW)</span>
+            <span class="entry-date">Sep 2023 – Jun 2025</span>
+          </div>
+          <div class="entry-sub">I.E.S. Matemático Puig Adam · Getafe, Madrid</div>
+          <ul>
+            <li>Programación backend con Java y Python, desarrollo frontend, bases de datos relacionales y REST APIs.</li>
+          </ul>
+        </div>
+
+        <div class="entry">
+          <div class="entry-header">
+            <span class="entry-title">CFGM Sistemas Microinformáticos y Redes (SMR)</span>
+            <span class="entry-date">Sep 2020 – Jun 2023</span>
+          </div>
+          <div class="entry-sub">I.E.S. Laguna de Joatzel · Getafe, Madrid</div>
+          <ul>
+            <li>Montaje, mantenimiento y configuración de equipos y redes. Certificación obtenida el 28/06/2023.</li>
+          </ul>
+        </div>
+
+      </div>
+
+    </main>
+
+  </div><!-- /body -->
+
+</div><!-- /page -->
+
+</body>
+</html>

@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.List;
+import java.util.Optional;
 
 /*
  * ******************************************************************************************
@@ -30,23 +31,26 @@ import java.util.List;
 // ? existsByAlumnoIdAndEstado           → protege el borrado de alumnos en AlumnoService.borrar()
 // ? existsByCursoIdAndEstado            → protege el borrado de cursos en CursoService.borrar()
 
-public interface MatriculaRepository extends JpaRepository<Matricula, Long> {
+public interface MatriculaRepository extends JpaRepository<Matricula, Integer> {
 
     // * Usado en AlumnoService.borrar() → impide borrar un alumno con matrículas
     // ACTIVAS
-    boolean existsByAlumnoIdAndEstado(Long alumnoId, EstadoMatricula estado);
+    boolean existsByAlumnoIdAndEstado(Integer alumnoId, EstadoMatricula estado);
 
     // * Usado en CursoService.borrar() → impide borrar un curso con matrículas
     // ACTIVAS
-    boolean existsByCursoIdAndEstado(Long cursoId, EstadoMatricula estado);
+    boolean existsByCursoIdAndEstado(Integer cursoId, EstadoMatricula estado);
 
     // * Usado en MatriculaService.crear() → impide duplicado ACTIVA para el mismo
     // par alumno+curso
-    boolean existsByAlumnoIdAndCursoIdAndEstado(Long alumnoId, Long cursoId, EstadoMatricula estado);
+    boolean existsByAlumnoIdAndCursoIdAndEstado(Integer alumnoId, Integer cursoId, EstadoMatricula estado);
 
     // * @EntityGraph carga alumno y curso en la misma query con JOIN → evita N+1
     // ? attributePaths indica los campos LAZY que deben cargarse de forma EAGER en
     // esta consulta
     @EntityGraph(attributePaths = { "alumno", "curso" })
     List<Matricula> findAllByOrderByFechaMatriculaDescIdDesc();
+
+    @EntityGraph(attributePaths = { "alumno", "curso" })
+    Optional<Matricula> findDetalleById(Integer id);
 }

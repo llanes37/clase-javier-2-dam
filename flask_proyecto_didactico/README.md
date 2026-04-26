@@ -39,7 +39,7 @@ Abre en el navegador: http://127.0.0.1:5000/
 - `/` : Home con formulario y enlaces de practica.
 - `/about` : Explica la estructura de la app.
 - `/procesar` (POST) : Recibe nombre, valida y responde.
-- `/saluda/<nombre>` : Parametro en la URL.
+- `/saluda/<nombre>/<apellido>/<int:edad>` : Parametros en la URL.
 - `/suma/<int:a>/<int:b>` : Parametros tipados (int).
 - `/buscar?q=valor&page=n` : Lee query strings y devuelve JSON.
 

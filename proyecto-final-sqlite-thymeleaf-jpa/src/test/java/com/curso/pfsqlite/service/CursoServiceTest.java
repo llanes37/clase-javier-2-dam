@@ -65,10 +65,27 @@ class CursoServiceTest {
     @Test
     void borrar_fallaConMatriculaActiva() {
         Curso curso = new Curso();
-        when(cursoRepository.findById(20L)).thenReturn(Optional.of(curso));
-        when(matriculaRepository.existsByCursoIdAndEstado(20L, EstadoMatricula.ACTIVA)).thenReturn(true);
+        when(cursoRepository.findById(20)).thenReturn(Optional.of(curso));
+        when(matriculaRepository.existsByCursoIdAndEstado(20, EstadoMatricula.ACTIVA)).thenReturn(true);
 
-        assertThrows(BusinessException.class, () -> cursoService.borrar(20L));
+        assertThrows(BusinessException.class, () -> cursoService.borrar(20));
         verify(cursoRepository, never()).delete(any());
+    }
+
+    @Test
+    void actualizar_okAplicaCambios() {
+        Curso existente = new Curso();
+        when(cursoRepository.findById(7)).thenReturn(Optional.of(existente));
+        when(cursoRepository.save(any(Curso.class))).thenAnswer(inv -> inv.getArgument(0));
+
+        form.setNombre("Spring Boot");
+        form.setTipo(CursoTipo.PRESENCIAL);
+        form.setPrecio(new BigDecimal("250.00"));
+
+        Curso actualizado = cursoService.actualizar(7, form);
+
+        assertEquals("Spring Boot", actualizado.getNombre());
+        assertEquals(CursoTipo.PRESENCIAL, actualizado.getTipo());
+        assertEquals(new BigDecimal("250.00"), actualizado.getPrecio());
     }
 }

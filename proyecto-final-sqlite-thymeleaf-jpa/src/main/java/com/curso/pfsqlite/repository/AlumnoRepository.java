@@ -17,9 +17,9 @@ import java.util.List;
 // ? Solo declaramos la interfaz. Spring genera la implementación completa en tiempo de arranque.
 // ? No escribimos ni una sola línea de SQL para las operaciones CRUD básicas.
 
-// * 🧠 TEORÍA: ¿Qué hereda JpaRepository<Alumno, Long>?
+// * 🧠 TEORÍA: ¿Qué hereda JpaRepository<Alumno, Integer>?
 // ? Alumno → tipo de la entidad que gestiona este repositorio.
-// ? Long   → tipo del campo @Id de la entidad (debe coincidir exactamente).
+// ? Integer → tipo del campo @Id de la entidad (debe coincidir exactamente).
 // ? Métodos heredados listos para usar: save(), findById(), findAll(), delete(), count()...
 
 // * 🧠 TEORÍA: Consultas derivadas (Derived Queries)
@@ -34,7 +34,7 @@ import java.util.List;
 // ! Si dos peticiones llegan simultáneas, ambas pueden pasar existsByEmail=false
 // ! antes de que ninguna haga el INSERT. La constraint de BD detecta el conflicto.
 
-public interface AlumnoRepository extends JpaRepository<Alumno, Long> {
+public interface AlumnoRepository extends JpaRepository<Alumno, Integer> {
 
     // * existsBy... → SELECT COUNT(*) > 0. Más eficiente que
     // findByEmail().isPresent()
